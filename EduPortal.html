@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduPortal — Examination System</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+:root{--bg:#060818;--blue:#63b3ed;--teal:#4fd1c5;--indigo:#7f9cf5;--green:#68d391;--amber:#f6ad55;--rose:#fc8181;--text:#e2e8f0;--muted:#718096}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(99,179,237,.3);border-radius:3px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse-ring{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+.fade-up{animation:fadeUp .55s cubic-bezier(.16,1,.3,1) both}
+.fade-up-1{animation:fadeUp .55s .1s cubic-bezier(.16,1,.3,1) both}
+.fade-up-2{animation:fadeUp .55s .2s cubic-bezier(.16,1,.3,1) both}
+.fade-up-3{animation:fadeUp .55s .3s cubic-bezier(.16,1,.3,1) both}
+.fade-up-4{animation:fadeUp .55s .4s cubic-bezier(.16,1,.3,1) both}
+.fade-in{animation:fadeIn .4s ease both}
+.scale-in{animation:scaleIn .3s cubic-bezier(.16,1,.3,1) both}
+.grad-text{background:linear-gradient(135deg,#63b3ed,#7f9cf5,#4fd1c5);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 4s ease infinite}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 28px;border-radius:12px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;background:linear-gradient(135deg,#63b3ed,#7f9cf5);color:#fff;transition:all .25s;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(99,179,237,.3)}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#7f9cf5,#63b3ed);opacity:0;transition:opacity .25s}
+.btn-primary:hover::before{opacity:1}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,179,237,.45)}
+.btn-primary span{position:relative;z-index:1}
+.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 26px;border-radius:12px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;background:transparent;color:#63b3ed;border:1.5px solid rgba(99,179,237,.4);transition:all .25s}
+.btn-ghost:hover{background:rgba(99,179,237,.1);border-color:#63b3ed;transform:translateY(-2px)}
+.btn-danger{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid rgba(252,129,129,.4);background:rgba(252,129,129,.08);color:#fc8181;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;transition:all .2s}
+.btn-danger:hover{background:rgba(252,129,129,.18);border-color:#fc8181}
+.btn-edit{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid rgba(99,179,237,.3);background:rgba(99,179,237,.07);color:#63b3ed;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;transition:all .2s}
+.btn-edit:hover{background:rgba(99,179,237,.15);border-color:#63b3ed}
+.btn-green{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid rgba(104,211,145,.3);background:rgba(104,211,145,.07);color:#68d391;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;transition:all .2s}
+.btn-green:hover{background:rgba(104,211,145,.15)}
+.btn-back{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:10px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);color:#a0aec0;transition:all .2s}
+.btn-back:hover{background:rgba(255,255,255,.09);color:#e2e8f0;border-color:rgba(255,255,255,.2)}
+.ep-input{width:100%;padding:12px 16px;border-radius:11px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);color:#e2e8f0;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:all .2s}
+.ep-input:focus{border-color:rgba(99,179,237,.6);background:rgba(99,179,237,.05);box-shadow:0 0 0 3px rgba(99,179,237,.1)}
+.ep-input::placeholder{color:#4a5568}
+.ep-label{font-size:12px;font-weight:600;color:#718096;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:7px}
+.nav-item{width:100%;padding:11px 14px;border-radius:10px;border:1px solid transparent;background:transparent;color:#718096;cursor:pointer;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;text-align:left;display:flex;align-items:center;gap:10px;margin-bottom:4px;transition:all .2s}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#a0aec0}
+.nav-item.active{background:linear-gradient(135deg,rgba(99,179,237,.15),rgba(127,156,245,.15));border-color:rgba(99,179,237,.3);color:#63b3ed;font-weight:600}
+.ep-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;transition:all .25s}
+.ep-card:hover{border-color:rgba(99,179,237,.2);background:rgba(255,255,255,.05)}
+.modal-overlay{position:fixed;inset:0;z-index:999;background:rgba(6,8,24,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
+.modal-box{background:#0d1117;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:scaleIn .25s cubic-bezier(.16,1,.3,1);box-shadow:0 30px 80px rgba(0,0,0,.7)}
+.glow-dot{width:8px;height:8px;border-radius:50%;background:#68d391;position:relative;display:inline-block}
+.glow-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:#68d391;animation:pulse-ring 1.5s ease-out infinite}
+.feat-card{flex:1 1 180px;padding:28px 22px;border-radius:18px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);text-align:center;transition:all .3s;cursor:default}
+.feat-card:hover{transform:translateY(-6px);border-color:rgba(99,179,237,.3)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.student-row{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;transition:all .2s}
+.student-row:hover{border-color:rgba(99,179,237,.2);background:rgba(255,255,255,.05)}
+.ep-table{width:100%;border-collapse:collapse;font-size:13px}
+.ep-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#718096;border-bottom:1px solid rgba(255,255,255,.07)}
+.ep-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:#cbd5e0}
+.ep-table tr:last-child td{border-bottom:none}
+.ep-table tr:hover td{background:rgba(255,255,255,.03)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-blue{background:rgba(99,179,237,.15);color:#63b3ed;border:1px solid rgba(99,179,237,.3)}
+.badge-green{background:rgba(104,211,145,.15);color:#68d391;border:1px solid rgba(104,211,145,.3)}
+.badge-amber{background:rgba(246,173,85,.15);color:#f6ad55;border:1px solid rgba(246,173,85,.3)}
+.badge-muted{background:rgba(255,255,255,.05);color:#718096;border:1px solid rgba(255,255,255,.1)}
+.stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px 20px;transition:all .25s}
+.stat-card:hover{border-color:rgba(99,179,237,.25);transform:translateY(-3px)}
+.ep-header{position:sticky;top:0;z-index:90;background:rgba(6,8,24,.8);backdrop-filter:blur(20px) saturate(1.5);border-bottom:1px solid rgba(255,255,255,.07);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.ep-sidebar{width:220px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid rgba(255,255,255,.06);padding:24px 14px;display:flex;flex-direction:column;min-height:calc(100vh - 64px)}
+.ticket-wrap{background:#fff;border-radius:16px;overflow:hidden;max-width:700px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.ticket-header{background:linear-gradient(135deg,#0d1117,#1a2332);padding:24px 32px;display:flex;align-items:center;gap:16px}
+.ticket-body{padding:24px 32px;color:#1a202c}
+.ticket-field{background:#f7fafc;border-radius:10px;padding:12px 16px;border-left:4px solid #63b3ed}
+.ticket-field-label{font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.ticket-field-val{font-size:14px;font-weight:700;color:#1a202c}
+.err-box{background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.3);border-radius:10px;padding:12px 16px;color:#fc8181;font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;background:linear-gradient(135deg,#63b3ed,#7f9cf5);color:#fff}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const ADMIN = { email: "admin@eduportal.com", password: "Admin@123" };
+
+const INIT_STUDENTS = [
+  { id:1, name:"Arjun Krishnan", email:"arjun@student.edu", password:"Arjun@123", regNo:"REG2024001", hallTicket:"HT2024001", seatNumber:"A-12", hallNumber:"Hall-3", department:"Computer Science", semester:"6th Semester",
+    exams:[
+      {date:"2026-03-10",subject:"Data Structures",time:"10:00 AM - 1:00 PM",hall:"Hall-3",seat:"A-12"},
+      {date:"2026-03-12",subject:"Operating Systems",time:"10:00 AM - 1:00 PM",hall:"Hall-3",seat:"A-12"},
+      {date:"2026-03-14",subject:"Database Management",time:"2:00 PM - 5:00 PM",hall:"Hall-1",seat:"B-08"},
+      {date:"2026-03-16",subject:"Computer Networks",time:"10:00 AM - 1:00 PM",hall:"Hall-2",seat:"C-05"},
+    ]},
+  { id:2, name:"Priya Nair", email:"priya@student.edu", password:"Priya@123", regNo:"REG2024002", hallTicket:"HT2024002", seatNumber:"B-07", hallNumber:"Hall-1", department:"Electronics", semester:"4th Semester",
+    exams:[
+      {date:"2026-03-10",subject:"Circuit Theory",time:"10:00 AM - 1:00 PM",hall:"Hall-1",seat:"B-07"},
+      {date:"2026-03-13",subject:"Digital Electronics",time:"2:00 PM - 5:00 PM",hall:"Hall-2",seat:"D-03"},
+    ]},
+];
+
+const fmtDate = (d) => {
+  try { return new Date(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric"}); }
+  catch { return d; }
+};
+
+function Logo({size=32}) {
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10}}>
+      <div style={{width:size,height:size,borderRadius:size*0.3,background:"linear-gradient(135deg,#63b3ed,#7f9cf5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.5,boxShadow:"0 4px 16px rgba(99,179,237,0.4)"}}>🎓</div>
+      <div>
+        <div style={{fontSize:size*0.5,fontWeight:800,background:"linear-gradient(135deg,#63b3ed,#7f9cf5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>EduPortal</div>
+        <div style={{fontSize:9,color:"#4a5568",letterSpacing:2,textTransform:"uppercase",marginTop:-2}}>Examination System</div>
+      </div>
+    </div>
+  );
+}
+
+function LandingPage({goLogin,goSignup}) {
+  const stats=[{val:"2,400+",label:"Students"},{val:"48",label:"Departments"},{val:"99.9%",label:"Uptime"},{val:"12+",label:"Years"}];
+  const features=[
+    {icon:"🎫",title:"Hall Tickets",desc:"Official exam hall tickets with QR verification",color:"#63b3ed"},
+    {icon:"📍",title:"Seat Details",desc:"Exact seat & hall assignments per exam",color:"#4fd1c5"},
+    {icon:"📅",title:"Exam Schedule",desc:"Complete timetable with real-time status",color:"#7f9cf5"},
+    {icon:"🔐",title:"Secure Access",desc:"Role-based authentication & data privacy",color:"#68d391"},
+  ];
+  return (
+    <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0",overflow:"hidden",position:"relative"}}>
+      <div className="orb" style={{width:600,height:600,top:-200,left:-200,background:"radial-gradient(circle,rgba(99,179,237,0.12) 0%,transparent 70%)"}}/>
+      <div className="orb" style={{width:500,height:500,top:100,right:-150,background:"radial-gradient(circle,rgba(127,156,245,0.1) 0%,transparent 70%)"}}/>
+      <div className="orb" style={{width:400,height:400,bottom:0,left:"40%",background:"radial-gradient(circle,rgba(79,209,197,0.08) 0%,transparent 70%)"}}/>
+      <header className="ep-header">
+        <Logo size={36}/>
+        <div style={{display:"flex",gap:10,alignItems:"center"}}>
+          <div className="glow-dot" style={{marginRight:4}}/>
+          <span style={{fontSize:12,color:"#718096",marginRight:8}}>Live System</span>
+          <button className="btn-ghost" onClick={goLogin} style={{padding:"9px 22px"}}>Login</button>
+          <button className="btn-primary" onClick={goSignup}><span>Sign Up</span></button>
+        </div>
+      </header>
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"80px 32px 60px",textAlign:"center",position:"relative"}}>
+        <div className="fade-up" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(99,179,237,0.1)",border:"1px solid rgba(99,179,237,0.25)",borderRadius:20,padding:"6px 16px",marginBottom:28,fontSize:12,color:"#63b3ed",fontWeight:600,letterSpacing:1}}>
+          <span style={{width:6,height:6,borderRadius:"50%",background:"#63b3ed",display:"inline-block"}}/>
+          OFFICIAL EXAMINATION PORTAL
+        </div>
+        <h1 className="fade-up-1" style={{fontSize:"clamp(38px,6vw,76px)",fontWeight:900,lineHeight:1.08,marginBottom:22,letterSpacing:-2}}>
+          Your Exams,<br/><span className="grad-text">Organized Perfectly</span>
+        </h1>
+        <p className="fade-up-2" style={{fontSize:"clamp(15px,2vw,18px)",color:"#718096",maxWidth:520,margin:"0 auto 40px",lineHeight:1.75}}>
+          Access hall tickets, seat assignments, exam schedules and more — all from one intelligent platform built for modern colleges.
+        </p>
+        <div className="fade-up-3" style={{display:"flex",gap:14,justifyContent:"center",flexWrap:"wrap"}}>
+          <button className="btn-primary" onClick={goLogin} style={{padding:"15px 36px",fontSize:15,borderRadius:14}}><span>Student Login →</span></button>
+          <button className="btn-ghost" onClick={goSignup} style={{padding:"14px 32px",fontSize:15,borderRadius:14}}>Register Now</button>
+        </div>
+        <div className="fade-up-4" style={{display:"flex",justifyContent:"center",marginTop:60,flexWrap:"wrap"}}>
+          {stats.map((s,i)=>(
+            <div key={i} style={{padding:"18px 36px",borderRight:i<stats.length-1?"1px solid rgba(255,255,255,0.07)":"none",textAlign:"center"}}>
+              <div style={{fontSize:26,fontWeight:800,background:"linear-gradient(135deg,#63b3ed,#7f9cf5)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{s.val}</div>
+              <div style={{fontSize:12,color:"#4a5568",marginTop:3}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{maxWidth:1000,margin:"0 auto",padding:"20px 32px 80px"}}>
+        <div style={{display:"flex",gap:16,flexWrap:"wrap",justifyContent:"center"}}>
+          {features.map((f,i)=>(
+            <div key={i} className="feat-card fade-up" style={{animationDelay:`${0.1*i}s`}}>
+              <div style={{width:52,height:52,borderRadius:14,background:`rgba(${f.color==="#63b3ed"?"99,179,237":f.color==="#4fd1c5"?"79,209,197":f.color==="#7f9cf5"?"127,156,245":"104,211,145"},0.12)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,margin:"0 auto 16px",border:`1px solid ${f.color}30`}}>{f.icon}</div>
+              <div style={{fontSize:15,fontWeight:700,color:f.color,marginBottom:8}}>{f.title}</div>
+              <div style={{fontSize:12,color:"#4a5568",lineHeight:1.6}}>{f.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{borderTop:"1px solid rgba(255,255,255,0.05)",padding:"20px 32px",textAlign:"center",color:"#2d3748",fontSize:12}}>
+        © 2026 EduPortal · Secure Examination Management System
+      </div>
+    </div>
+  );
+}
+
+function LoginPage({students,onSuccess,goBack,goSignup}) {
+  const [email,setEmail]=useState("");
+  const [pass,setPass]=useState("");
+  const [err,setErr]=useState("");
+  const [show,setShow]=useState(false);
+  const [loading,setLoading]=useState(false);
+  const login=()=>{
+    setErr("");setLoading(true);
+    setTimeout(()=>{
+      setLoading(false);
+      const t=email.trim().toLowerCase();
+      if(t===ADMIN.email&&pass===ADMIN.password){onSuccess({role:"admin"});return;}
+      const s=students.find(x=>x.email.trim().toLowerCase()===t&&x.password===pass);
+      if(s){onSuccess({role:"student",id:s.id});return;}
+      setErr("Invalid email or password. Please try again.");
+    },600);
+  };
+  return (
+    <div style={{minHeight:"100vh",background:"#060818",display:"flex",position:"relative",overflow:"hidden"}}>
+      <div className="orb" style={{width:700,height:700,top:-300,right:-300,background:"radial-gradient(circle,rgba(127,156,245,0.12) 0%,transparent 70%)"}}/>
+      <div className="orb" style={{width:500,height:500,bottom:-200,left:-200,background:"radial-gradient(circle,rgba(79,209,197,0.08) 0%,transparent 70%)"}}/>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+        <div className="scale-in" style={{width:"100%",maxWidth:420}}>
+          <button className="btn-back" onClick={goBack} style={{marginBottom:28}}>← Back to Home</button>
+          <div style={{marginBottom:36}}>
+            <Logo size={40}/>
+            <h2 style={{fontSize:26,fontWeight:800,marginTop:24,marginBottom:6,letterSpacing:-0.5}}>Welcome back</h2>
+            <p style={{color:"#4a5568",fontSize:14}}>Sign in to your portal account</p>
+          </div>
+          {err&&<div className="err-box">⚠️ {err}</div>}
+          <div style={{marginBottom:18}}>
+            <label className="ep-label">Email Address</label>
+            <input className="ep-input" value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="you@email.com"/>
+          </div>
+          <div style={{marginBottom:28,position:"relative"}}>
+            <label className="ep-label">Password</label>
+            <input className="ep-input" value={pass} onChange={e=>setPass(e.target.value)} type={show?"text":"password"} placeholder="••••••••" onKeyDown={e=>e.key==="Enter"&&login()} style={{paddingRight:44}}/>
+            <button onClick={()=>setShow(!show)} style={{position:"absolute",right:14,top:34,background:"none",border:"none",cursor:"pointer",color:"#4a5568",fontSize:16}}>{show?"🙈":"👁️"}</button>
+          </div>
+          <button className="btn-primary" onClick={login} style={{width:"100%",padding:"14px",fontSize:15,borderRadius:13,justifyContent:"center"}}>
+            {loading?<span style={{animation:"spin 0.8s linear infinite",display:"inline-block"}}>⟳</span>:<span>Sign In →</span>}
+          </button>
+          <p style={{textAlign:"center",color:"#4a5568",fontSize:13,marginTop:20}}>
+            New student?{" "}<button onClick={goSignup} style={{background:"none",border:"none",color:"#63b3ed",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:600}}>Create account</button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SignupPage({goBack,onRegister}) {
+  const [f,setF]=useState({name:"",email:"",pass:"",confirm:""});
+  const [err,setErr]=useState("");
+  const [done,setDone]=useState(false);
+  const submit=()=>{
+    setErr("");
+    if(!f.name||!f.email||!f.pass)return setErr("All fields are required.");
+    if(f.pass!==f.confirm)return setErr("Passwords do not match.");
+    if(f.pass.length<6)return setErr("Password must be at least 6 characters.");
+    onRegister({id:Date.now(),name:f.name,email:f.email,password:f.pass,regNo:"",hallTicket:"",seatNumber:"",hallNumber:"",department:"",semester:"",exams:[]});
+    setDone(true);
+  };
+  if(done)return(
+    <div style={{minHeight:"100vh",background:"#060818",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div className="scale-in" style={{textAlign:"center",maxWidth:420,padding:20}}>
+        <div style={{width:80,height:80,borderRadius:"50%",background:"rgba(104,211,145,0.15)",border:"2px solid rgba(104,211,145,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,margin:"0 auto 24px"}}>✅</div>
+        <h2 style={{fontSize:24,fontWeight:800,marginBottom:12}}>Registration Submitted!</h2>
+        <p style={{color:"#718096",lineHeight:1.7,marginBottom:28,fontSize:14}}>Your account request has been submitted. An administrator will review and activate your account.</p>
+        <button className="btn-back" onClick={goBack}>← Back to Login</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{minHeight:"100vh",background:"#060818",display:"flex",alignItems:"center",justifyContent:"center",padding:20,position:"relative",overflow:"hidden"}}>
+      <div className="orb" style={{width:600,height:600,top:-200,right:-200,background:"radial-gradient(circle,rgba(99,179,237,0.1) 0%,transparent 70%)"}}/>
+      <div className="scale-in" style={{width:"100%",maxWidth:420}}>
+        <button className="btn-back" onClick={goBack} style={{marginBottom:28}}>← Back to Login</button>
+        <div style={{marginBottom:32}}>
+          <Logo size={38}/>
+          <h2 style={{fontSize:24,fontWeight:800,marginTop:22,marginBottom:6}}>Create account</h2>
+          <p style={{color:"#4a5568",fontSize:13}}>Register to access the student portal</p>
+        </div>
+        {err&&<div className="err-box">⚠️ {err}</div>}
+        {[["Full Name","name","text","Your full name"],["Email Address","email","email","you@email.com"],["Password","pass","password","Min. 6 characters"],["Confirm Password","confirm","password","Re-enter password"]].map(([label,key,type,ph])=>(
+          <div key={key} style={{marginBottom:16}}>
+            <label className="ep-label">{label}</label>
+            <input className="ep-input" value={f[key]} onChange={e=>setF({...f,[key]:e.target.value})} type={type} placeholder={ph} onKeyDown={e=>e.key==="Enter"&&submit()}/>
+          </div>
+        ))}
+        <button className="btn-primary" onClick={submit} style={{width:"100%",padding:"14px",fontSize:15,borderRadius:13,justifyContent:"center",marginTop:8}}><span>Create Account →</span></button>
+        <p style={{textAlign:"center",color:"#2d3748",fontSize:11,marginTop:14,lineHeight:1.7}}>After registration, admin will activate your account and assign exam details.</p>
+      </div>
+    </div>
+  );
+}
+
+function StudentDashboard({student,onLogout}) {
+  const [tab,setTab]=useState("ticket");
+  const todayStr=new Date().toISOString().split("T")[0];
+  const nextExam=(student.exams||[]).find(e=>e.date>=todayStr);
+  return(
+    <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0",display:"flex",flexDirection:"column"}}>
+      <header className="ep-header">
+        <Logo size={32}/>
+        <div style={{display:"flex",alignItems:"center",gap:14}}>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:14,fontWeight:600}}>{student.name}</div>
+            <div style={{fontSize:11,color:"#4a5568"}}>{student.regNo||"Student"}</div>
+          </div>
+          <div className="avatar" style={{width:36,height:36,fontSize:14}}>{student.name?.[0]}</div>
+          <button className="btn-danger" onClick={onLogout} style={{padding:"7px 14px"}}>Logout</button>
+        </div>
+      </header>
+      <div style={{display:"flex",flex:1,overflow:"hidden"}}>
+        <aside className="ep-sidebar">
+          <div style={{fontSize:10,fontWeight:700,color:"#2d3748",letterSpacing:2,textTransform:"uppercase",marginBottom:12,paddingLeft:6}}>MENU</div>
+          {[["ticket","🎫","Hall Ticket"],["schedule","📅","Exam Schedule"],["profile","👤","My Profile"]].map(([id,icon,label])=>(
+            <button key={id} className={`nav-item${tab===id?" active":""}`} onClick={()=>setTab(id)}>
+              <span style={{fontSize:16}}>{icon}</span>{label}
+            </button>
+          ))}
+          <div style={{marginTop:"auto",paddingTop:16,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+            <button className="btn-back" onClick={onLogout} style={{width:"100%",justifyContent:"center"}}>⬅ Back to Home</button>
+          </div>
+        </aside>
+        <main style={{flex:1,padding:32,overflowY:"auto"}}>
+          {tab==="ticket"&&(
+            <div className="fade-in">
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Hall Ticket</h2>
+              <div className="ticket-wrap">
+                <div className="ticket-header">
+                  <div style={{width:56,height:56,borderRadius:14,background:"linear-gradient(135deg,#63b3ed,#7f9cf5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26}}>🎓</div>
+                  <div>
+                    <div style={{color:"#63b3ed",fontSize:17,fontWeight:800}}>EduPortal — Examination System</div>
+                    <div style={{color:"#4a5568",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginTop:2}}>Official Hall Ticket · Controller of Examinations</div>
+                  </div>
+                </div>
+                <div className="ticket-body">
+                  <div style={{textAlign:"center",marginBottom:20,paddingBottom:14,borderBottom:"1px solid #e2e8f0"}}>
+                    <div style={{fontSize:13,fontWeight:700,textTransform:"uppercase",letterSpacing:2,color:"#2d3748"}}>Examination Hall Ticket · {student.semester}</div>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+                    {[["Hall Ticket No.",student.hallTicket],["Register No.",student.regNo],["Student Name",student.name],["Department",student.department],["Hall Number",student.hallNumber],["Seat Number",student.seatNumber]].map(([k,v])=>(
+                      <div key={k} className="ticket-field">
+                        <div className="ticket-field-label">{k}</div>
+                        <div className="ticket-field-val">{v||"—"}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{background:"#f7fafc",borderRadius:12,padding:16,marginBottom:16}}>
+                    <div style={{fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:"#4a5568",marginBottom:12}}>Exam Schedule</div>
+                    <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,color:"#2d3748"}}>
+                      <thead><tr style={{background:"#edf2f7"}}>
+                        {["Date","Subject","Time","Hall","Seat"].map(h=><th key={h} style={{padding:"8px 12px",textAlign:"left",fontSize:11,fontWeight:700,color:"#718096",textTransform:"uppercase"}}>{h}</th>)}
+                      </tr></thead>
+                      <tbody>
+                        {(student.exams||[]).map((e,i)=>(
+                          <tr key={i} style={{borderBottom:"1px solid #e2e8f0"}}>
+                            <td style={{padding:"9px 12px"}}>{fmtDate(e.date)}</td>
+                            <td style={{padding:"9px 12px",fontWeight:600}}>{e.subject}</td>
+                            <td style={{padding:"9px 12px"}}>{e.time}</td>
+                            <td style={{padding:"9px 12px"}}>{e.hall}</td>
+                            <td style={{padding:"9px 12px",fontWeight:700,color:"#3182ce"}}>{e.seat}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#a0aec0",paddingTop:12,borderTop:"1px solid #e2e8f0"}}>
+                    <span>Computer generated. No physical signature required.</span>
+                    <span style={{fontWeight:700,color:"#4a5568"}}>Controller of Examinations · EduPortal</span>
+                  </div>
+                </div>
+              </div>
+              {nextExam&&(
+                <div style={{marginTop:20,maxWidth:700,background:"linear-gradient(135deg,rgba(99,179,237,0.08),rgba(127,156,245,0.08))",border:"1px solid rgba(99,179,237,0.25)",borderRadius:14,padding:"16px 20px",display:"flex",gap:14,alignItems:"center"}}>
+                  <span style={{fontSize:24}}>⏰</span>
+                  <div>
+                    <div style={{fontWeight:700,color:"#63b3ed",fontSize:14}}>Next Exam: {nextExam.subject}</div>
+                    <div style={{color:"#718096",fontSize:13,marginTop:2}}>{fmtDate(nextExam.date)} · {nextExam.time} · {nextExam.hall} · Seat <strong style={{color:"#e2e8f0"}}>{nextExam.seat}</strong></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          {tab==="schedule"&&(
+            <div className="fade-in">
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Exam Schedule</h2>
+              <div style={{maxWidth:700}}>
+                {(student.exams||[]).length===0&&<div style={{color:"#4a5568",fontSize:14,padding:32,textAlign:"center"}}>No exams scheduled yet.</div>}
+                {(student.exams||[]).map((e,i)=>{
+                  const isPast=e.date<todayStr,isToday=e.date===todayStr;
+                  return(
+                    <div key={i} className="ep-card" style={{padding:"18px 22px",marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center",animation:`slideIn 0.3s ${i*0.05}s both`}}>
+                      <div>
+                        <div style={{fontSize:15,fontWeight:700,marginBottom:6,color:isPast?"#4a5568":"#e2e8f0"}}>{e.subject}</div>
+                        <div style={{fontSize:12,color:"#718096"}}>{fmtDate(e.date)} · {e.time}</div>
+                        <div style={{fontSize:12,color:"#4a5568",marginTop:4}}>📍 {e.hall} · Seat: <strong style={{color:"#63b3ed"}}>{e.seat}</strong></div>
+                      </div>
+                      <span className={`badge ${isToday?"badge-blue":isPast?"badge-muted":"badge-green"}`}>{isToday?"TODAY":isPast?"Done":"Upcoming"}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {tab==="profile"&&(
+            <div className="fade-in">
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>My Profile</h2>
+              <div style={{maxWidth:500}}>
+                <div className="ep-card" style={{padding:28,marginBottom:16}}>
+                  <div style={{display:"flex",alignItems:"center",gap:18,marginBottom:28}}>
+                    <div className="avatar" style={{width:68,height:68,fontSize:28}}>{student.name?.[0]}</div>
+                    <div>
+                      <div style={{fontSize:20,fontWeight:800}}>{student.name}</div>
+                      <div style={{color:"#718096",fontSize:13,marginTop:4}}>{student.department} · {student.semester}</div>
+                      <div className="badge badge-blue" style={{marginTop:8}}>Student</div>
+                    </div>
+                  </div>
+                  {[["📧","Email",student.email],["🔑","Register No.",student.regNo],["🎫","Hall Ticket",student.hallTicket],["🏛️","Hall Number",student.hallNumber],["💺","Seat Number",student.seatNumber]].map(([icon,k,v])=>(
+                    <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid rgba(255,255,255,0.05)",fontSize:13}}>
+                      <span style={{color:"#718096"}}>{icon} {k}</span>
+                      <span style={{fontWeight:600}}>{v||"—"}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{padding:"14px 18px",background:"rgba(252,129,129,0.06)",border:"1px solid rgba(252,129,129,0.2)",borderRadius:12,fontSize:12,color:"#fc8181"}}>
+                  🔒 Profile details can only be updated by an Administrator.
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function AdminDashboard({students,setStudents,onLogout}) {
+  const [tab,setTab]=useState("overview");
+  const [editS,setEditS]=useState(null);
+  const [addOpen,setAddOpen]=useState(false);
+  const [delId,setDelId]=useState(null);
+  const [editExams,setEditExams]=useState(null);
+  const emptyS={name:"",email:"",password:"",regNo:"",hallTicket:"",seatNumber:"",hallNumber:"",department:"",semester:""};
+  const [newS,setNewS]=useState(emptyS);
+  const saveEdit=()=>{setStudents(students.map(s=>s.id===editS.id?editS:s));setEditS(null);};
+  const doDelete=()=>{setStudents(students.filter(s=>s.id!==delId));setDelId(null);};
+  const doAdd=()=>{setStudents([...students,{...newS,id:Date.now(),exams:[]}]);setAddOpen(false);setNewS(emptyS);};
+  const saveExams=()=>{setStudents(students.map(s=>s.id===editExams.id?editExams:s));setEditExams(null);};
+  const FIELDS=[["Name","name"],["Email","email"],["Password","password"],["Reg No.","regNo"],["Hall Ticket","hallTicket"],["Seat No.","seatNumber"],["Hall No.","hallNumber"],["Department","department"],["Semester","semester"]];
+  const statCards=[
+    {icon:"👥",label:"Total Students",val:students.length,color:"#63b3ed"},
+    {icon:"📅",label:"Total Exams",val:students.reduce((a,s)=>a+(s.exams?.length||0),0),color:"#68d391"},
+    {icon:"🏛️",label:"Unique Halls",val:[...new Set(students.map(s=>s.hallNumber).filter(Boolean))].length,color:"#f6ad55"},
+    {icon:"📚",label:"Departments",val:[...new Set(students.map(s=>s.department).filter(Boolean))].length,color:"#7f9cf5"},
+  ];
+  return(
+    <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0",display:"flex",flexDirection:"column"}}>
+      <header className="ep-header">
+        <Logo size={32}/>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="badge badge-amber">🔑 Admin</div>
+          <button className="btn-danger" onClick={onLogout} style={{padding:"7px 14px"}}>Logout</button>
+        </div>
+      </header>
+      <div style={{display:"flex",flex:1,overflow:"hidden"}}>
+        <aside className="ep-sidebar">
+          <div style={{fontSize:10,fontWeight:700,color:"#2d3748",letterSpacing:2,textTransform:"uppercase",marginBottom:12,paddingLeft:6}}>ADMIN PANEL</div>
+          {[["overview","📊","Overview"],["students","👥","Students"],["exams","📋","Manage Exams"]].map(([id,icon,label])=>(
+            <button key={id} className={`nav-item${tab===id?" active":""}`} onClick={()=>setTab(id)}>
+              <span style={{fontSize:16}}>{icon}</span>{label}
+            </button>
+          ))}
+          <div style={{marginTop:"auto",paddingTop:16,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+            <button className="btn-back" onClick={onLogout} style={{width:"100%",justifyContent:"center"}}>⬅ Back to Home</button>
+          </div>
+        </aside>
+        <main style={{flex:1,padding:32,overflowY:"auto"}}>
+          {tab==="overview"&&(
+            <div className="fade-in">
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Dashboard Overview</h2>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:14,marginBottom:32}}>
+                {statCards.map((s,i)=>(
+                  <div key={i} className="stat-card" style={{animation:`fadeUp 0.4s ${i*0.08}s both`}}>
+                    <div style={{fontSize:24,marginBottom:10}}>{s.icon}</div>
+                    <div style={{fontSize:28,fontWeight:900,color:s.color}}>{s.val}</div>
+                    <div style={{fontSize:12,color:"#4a5568",marginTop:2}}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="ep-card" style={{padding:24}}>
+                <div style={{fontSize:14,fontWeight:700,marginBottom:18,color:"#a0aec0"}}>All Registered Students</div>
+                <table className="ep-table">
+                  <thead><tr><th>Student</th><th>Reg No.</th><th>Department</th><th>Hall Ticket</th><th>Status</th></tr></thead>
+                  <tbody>
+                    {students.map(s=>(
+                      <tr key={s.id}>
+                        <td><div style={{display:"flex",alignItems:"center",gap:10}}><div className="avatar" style={{width:30,height:30,fontSize:12}}>{s.name?.[0]}</div><span style={{fontWeight:600}}>{s.name}</span></div></td>
+                        <td>{s.regNo||"—"}</td><td>{s.department||"—"}</td>
+                        <td><span className="badge badge-blue">{s.hallTicket||"Pending"}</span></td>
+                        <td><span className={`badge ${s.hallTicket?"badge-green":"badge-amber"}`}>{s.hallTicket?"Active":"Pending"}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {tab==="students"&&(
+            <div className="fade-in">
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
+                <h2 style={{fontSize:22,fontWeight:800,letterSpacing:-0.5}}>Manage Students</h2>
+                <button className="btn-primary" onClick={()=>setAddOpen(true)} style={{padding:"10px 22px",fontSize:13}}><span>+ Add Student</span></button>
+              </div>
+              {students.map(s=>(
+                <div key={s.id} className="student-row">
+                  <div style={{display:"flex",alignItems:"center",gap:14}}>
+                    <div className="avatar" style={{width:44,height:44,fontSize:17}}>{s.name?.[0]}</div>
+                    <div>
+                      <div style={{fontWeight:700,fontSize:15}}>{s.name}</div>
+                      <div style={{fontSize:12,color:"#718096",marginTop:2}}>{s.regNo||"—"} · {s.department||"—"} · {s.semester||"—"}</div>
+                      <div style={{fontSize:11,color:"#4a5568",marginTop:3}}>🎫 {s.hallTicket||"—"} · 🏛️ {s.hallNumber||"—"} · 💺 {s.seatNumber||"—"}</div>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:8,flexShrink:0}}>
+                    <button className="btn-edit" onClick={()=>setEditS({...s})}>✏️ Edit</button>
+                    <button className="btn-danger" onClick={()=>setDelId(s.id)}>🗑️ Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {tab==="exams"&&(
+            <div className="fade-in">
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Manage Exam Details</h2>
+              {students.map(s=>(
+                <div key={s.id} className="ep-card" style={{padding:20,marginBottom:14}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <div style={{display:"flex",alignItems:"center",gap:12}}>
+                      <div className="avatar" style={{width:36,height:36,fontSize:14}}>{s.name?.[0]}</div>
+                      <div>
+                        <div style={{fontWeight:700,fontSize:14}}>{s.name}</div>
+                        <div style={{fontSize:12,color:"#4a5568"}}>{s.regNo||"—"} · {s.department||"—"}</div>
+                      </div>
+                    </div>
+                    <div style={{display:"flex",gap:8}}>
+                      <button className="btn-edit" onClick={()=>setEditExams({...s})}>✏️ Edit Exams</button>
+                      <button className="btn-green" onClick={()=>setEditExams({...s,exams:[...(s.exams||[]),{date:"",subject:"",time:"",hall:s.hallNumber||"",seat:s.seatNumber||""}]})}>+ Add</button>
+                    </div>
+                  </div>
+                  {(s.exams||[]).length===0?<div style={{fontSize:12,color:"#2d3748",fontStyle:"italic"}}>No exams added yet.</div>
+                  :(s.exams||[]).map((e,i)=>(
+                    <div key={i} style={{background:"rgba(255,255,255,0.03)",borderRadius:8,padding:"9px 14px",marginBottom:6,fontSize:12,display:"flex",justifyContent:"space-between"}}>
+                      <span><strong style={{color:"#63b3ed"}}>{e.subject||"—"}</strong> · {fmtDate(e.date)} · {e.time||"—"}</span>
+                      <span style={{color:"#4a5568"}}>{e.hall} · {e.seat}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+      {editS&&(
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3 style={{fontSize:18,fontWeight:800,marginBottom:22,color:"#63b3ed"}}>Edit Student</h3>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              {FIELDS.map(([label,key])=>(
+                <div key={key}>
+                  <label className="ep-label">{label}</label>
+                  <input className="ep-input" value={editS[key]||""} onChange={e=>{const v=e.target.value;setEditS(p=>({...p,[key]:v}));}}/>
+                </div>
+              ))}
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:22}}>
+              <button className="btn-primary" onClick={saveEdit} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}><span>Save Changes</span></button>
+              <button className="btn-ghost" onClick={()=>setEditS(null)} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {addOpen&&(
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3 style={{fontSize:18,fontWeight:800,marginBottom:22,color:"#63b3ed"}}>Add New Student</h3>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              {FIELDS.map(([label,key])=>(
+                <div key={key}>
+                  <label className="ep-label">{label}</label>
+                  <input className="ep-input" value={newS[key]||""} onChange={e=>{const v=e.target.value;setNewS(p=>({...p,[key]:v}));}}/>
+                </div>
+              ))}
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:22}}>
+              <button className="btn-primary" onClick={doAdd} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}><span>Add Student</span></button>
+              <button className="btn-ghost" onClick={()=>setAddOpen(false)} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {delId&&(
+        <div className="modal-overlay">
+          <div className="modal-box" style={{maxWidth:380,textAlign:"center"}}>
+            <div style={{fontSize:48,marginBottom:16}}>⚠️</div>
+            <h3 style={{fontSize:18,fontWeight:800,color:"#fc8181",marginBottom:10}}>Delete Student?</h3>
+            <p style={{color:"#718096",fontSize:14,lineHeight:1.6,marginBottom:24}}>This action cannot be undone. All data will be permanently removed.</p>
+            <div style={{display:"flex",gap:10}}>
+              <button onClick={doDelete} style={{flex:1,padding:"12px",background:"rgba(220,50,50,0.8)",border:"none",borderRadius:10,color:"#fff",fontWeight:700,cursor:"pointer",fontFamily:"inherit",fontSize:14}}>Delete</button>
+              <button className="btn-ghost" onClick={()=>setDelId(null)} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {editExams&&(
+        <div className="modal-overlay">
+          <div className="modal-box" style={{maxWidth:640}}>
+            <h3 style={{fontSize:18,fontWeight:800,marginBottom:18,color:"#63b3ed"}}>Exams — {editExams.name}</h3>
+            {editExams.exams.map((e,i)=>(
+              <div key={i} style={{background:"rgba(255,255,255,0.03)",borderRadius:12,padding:16,marginBottom:12,border:"1px solid rgba(255,255,255,0.07)"}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  {[["Subject","subject","text"],["Date","date","date"],["Time","time","text"],["Hall","hall","text"],["Seat","seat","text"]].map(([label,key,type])=>(
+                    <div key={key}>
+                      <label className="ep-label">{label}</label>
+                      <input className="ep-input" type={type} value={e[key]||""} onChange={ev=>{
+                        const arr=[...editExams.exams];arr[i]={...arr[i],[key]:ev.target.value};
+                        setEditExams({...editExams,exams:arr});
+                      }}/>
+                    </div>
+                  ))}
+                </div>
+                <button className="btn-danger" onClick={()=>setEditExams({...editExams,exams:editExams.exams.filter((_,j)=>j!==i)})} style={{marginTop:10,fontSize:11}}>Remove</button>
+              </div>
+            ))}
+            <button className="btn-green" onClick={()=>setEditExams({...editExams,exams:[...editExams.exams,{date:"",subject:"",time:"",hall:"",seat:""}]})} style={{marginBottom:16}}>+ Add Exam</button>
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn-primary" onClick={saveExams} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}><span>Save</span></button>
+              <button className="btn-ghost" onClick={()=>setEditExams(null)} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [page,setPage]=useState("landing");
+  const [user,setUser]=useState(null);
+  const [students,setStudents]=useState(INIT_STUDENTS);
+  const onSuccess=({role,id})=>{setUser({role,id});setPage(role==="admin"?"admin":"student");};
+  const logout=()=>{setUser(null);setPage("landing");};
+  const currentStudent=user?.role==="student"?(students.find(s=>s.id===user.id)||null):null;
+  return (
+    <>
+      {page==="landing"&&<LandingPage goLogin={()=>setPage("login")} goSignup={()=>setPage("signup")}/>}
+      {page==="login"&&<LoginPage students={students} onSuccess={onSuccess} goBack={()=>setPage("landing")} goSignup={()=>setPage("signup")}/>}
+      {page==="signup"&&<SignupPage goBack={()=>setPage("login")} onRegister={s=>setStudents(prev=>[...prev,s])}/>}
+      {page==="admin"&&<AdminDashboard students={students} setStudents={setStudents} onLogout={logout}/>}
+      {page==="student"&&currentStudent&&<StudentDashboard student={currentStudent} onLogout={logout}/>}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
