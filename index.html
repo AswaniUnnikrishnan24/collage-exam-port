@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>EduPortal — Examination System</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -16,10 +16,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-@keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse-ring{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.6);opacity:0}}
+@keyframes lockPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes countdownTick{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
 .fade-up{animation:fadeUp .55s cubic-bezier(.16,1,.3,1) both}
 .fade-up-1{animation:fadeUp .55s .1s cubic-bezier(.16,1,.3,1) both}
 .fade-up-2{animation:fadeUp .55s .2s cubic-bezier(.16,1,.3,1) both}
@@ -41,6 +42,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
 .btn-edit:hover{background:rgba(99,179,237,.15);border-color:#63b3ed}
 .btn-green{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid rgba(104,211,145,.3);background:rgba(104,211,145,.07);color:#68d391;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;transition:all .2s}
 .btn-green:hover{background:rgba(104,211,145,.15)}
+.btn-amber{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;border:1.5px solid rgba(246,173,85,.3);background:rgba(246,173,85,.07);color:#f6ad55;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;transition:all .2s}
+.btn-amber:hover{background:rgba(246,173,85,.15)}
 .btn-back{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:10px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);color:#a0aec0;transition:all .2s}
 .btn-back:hover{background:rgba(255,255,255,.09);color:#e2e8f0;border-color:rgba(255,255,255,.2)}
 .ep-input{width:100%;padding:12px 16px;border-radius:11px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);color:#e2e8f0;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:all .2s}
@@ -70,50 +73,73 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
 .badge-blue{background:rgba(99,179,237,.15);color:#63b3ed;border:1px solid rgba(99,179,237,.3)}
 .badge-green{background:rgba(104,211,145,.15);color:#68d391;border:1px solid rgba(104,211,145,.3)}
 .badge-amber{background:rgba(246,173,85,.15);color:#f6ad55;border:1px solid rgba(246,173,85,.3)}
+.badge-rose{background:rgba(252,129,129,.15);color:#fc8181;border:1px solid rgba(252,129,129,.3)}
 .badge-muted{background:rgba(255,255,255,.05);color:#718096;border:1px solid rgba(255,255,255,.1)}
 .stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px 20px;transition:all .25s}
 .stat-card:hover{border-color:rgba(99,179,237,.25);transform:translateY(-3px)}
 .ep-header{position:sticky;top:0;z-index:90;background:rgba(6,8,24,.8);backdrop-filter:blur(20px) saturate(1.5);border-bottom:1px solid rgba(255,255,255,.07);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between}
-.ep-sidebar{width:220px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid rgba(255,255,255,.06);padding:24px 14px;display:flex;flex-direction:column;min-height:calc(100vh - 64px)}
-.ticket-wrap{background:#fff;border-radius:16px;overflow:hidden;max-width:700px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.ticket-header{background:linear-gradient(135deg,#0d1117,#1a2332);padding:24px 32px;display:flex;align-items:center;gap:16px}
-.ticket-body{padding:24px 32px;color:#1a202c}
-.ticket-field{background:#f7fafc;border-radius:10px;padding:12px 16px;border-left:4px solid #63b3ed}
-.ticket-field-label{font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.ticket-field-val{font-size:14px;font-weight:700;color:#1a202c}
+.ep-sidebar{width:230px;flex-shrink:0;background:rgba(255,255,255,.02);border-right:1px solid rgba(255,255,255,.06);padding:24px 14px;display:flex;flex-direction:column;min-height:calc(100vh - 64px)}
 .err-box{background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.3);border-radius:10px;padding:12px 16px;color:#fc8181;font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.success-box{background:rgba(104,211,145,.08);border:1px solid rgba(104,211,145,.3);border-radius:10px;padding:12px 16px;color:#68d391;font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:18px}
 .avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;background:linear-gradient(135deg,#63b3ed,#7f9cf5);color:#fff}
+.lock-overlay{background:rgba(6,8,24,.9);border:1px solid rgba(252,129,129,.2);border-radius:14px;padding:28px;text-align:center;animation:lockPulse 2s ease infinite}
+.countdown-box{display:inline-flex;flex-direction:column;align-items:center;background:rgba(252,129,129,.08);border:1px solid rgba(252,129,129,.25);border-radius:12px;padding:14px 24px;margin:0 6px;min-width:70px}
+.countdown-num{font-size:36px;font-weight:900;color:#fc8181;line-height:1;animation:countdownTick 1s ease infinite}
+.countdown-label{font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.drop-zone{border:2px dashed rgba(99,179,237,.3);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(99,179,237,.03)}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#63b3ed;background:rgba(99,179,237,.08)}
+.hall-config-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-bottom:10px}
+.seat-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.seat-cell{width:36px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#4a5568;transition:all .2s}
+.seat-cell.occupied{background:linear-gradient(135deg,rgba(99,179,237,.2),rgba(127,156,245,.2));border-color:rgba(99,179,237,.4);color:#63b3ed}
+.seat-cell.highlight{background:linear-gradient(135deg,#f6ad55,#fc8181);border-color:#f6ad55;color:#fff;transform:scale(1.1);box-shadow:0 0 10px rgba(246,173,85,.4)}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect } = React;
+const {useState,useEffect,useRef,useCallback}=React;
 
-const ADMIN = { email: "admin@eduportal.com", password: "Admin@123" };
+const ADMIN={email:"admin@gmail.com",password:"123"};
 
-const INIT_STUDENTS = [
-  { id:1, name:"Arjun Krishnan", email:"arjun@student.edu", password:"Arjun@123", regNo:"REG2024001", hallTicket:"HT2024001", seatNumber:"A-12", hallNumber:"Hall-3", department:"Computer Science", semester:"6th Semester",
-    exams:[
-      {date:"2026-03-10",subject:"Data Structures",time:"10:00 AM - 1:00 PM",hall:"Hall-3",seat:"A-12"},
-      {date:"2026-03-12",subject:"Operating Systems",time:"10:00 AM - 1:00 PM",hall:"Hall-3",seat:"A-12"},
-      {date:"2026-03-14",subject:"Database Management",time:"2:00 PM - 5:00 PM",hall:"Hall-1",seat:"B-08"},
-      {date:"2026-03-16",subject:"Computer Networks",time:"10:00 AM - 1:00 PM",hall:"Hall-2",seat:"C-05"},
-    ]},
-  { id:2, name:"Priya Nair", email:"priya@student.edu", password:"Priya@123", regNo:"REG2024002", hallTicket:"HT2024002", seatNumber:"B-07", hallNumber:"Hall-1", department:"Electronics", semester:"4th Semester",
-    exams:[
-      {date:"2026-03-10",subject:"Circuit Theory",time:"10:00 AM - 1:00 PM",hall:"Hall-1",seat:"B-07"},
-      {date:"2026-03-13",subject:"Digital Electronics",time:"2:00 PM - 5:00 PM",hall:"Hall-2",seat:"D-03"},
-    ]},
-];
+// ─── Helpers ───────────────────────────────────────────────
+const fmtDate=d=>{try{return new Date(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric"});}catch{return d;}};
+const pad=n=>String(n).padStart(2,"0");
 
-const fmtDate = (d) => {
-  try { return new Date(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric"}); }
-  catch { return d; }
-};
+function getCountdown(unlockDT){
+  const diff=new Date(unlockDT)-new Date();
+  if(diff<=0)return null;
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  return{h,m,s,diff};
+}
 
-function Logo({size=32}) {
-  return (
+// Given sorted students + hall configs → assign seats
+function assignSeats(students,halls){
+  // sorted by regNo
+  const sorted=[...students].sort((a,b)=>String(a.regNo).localeCompare(String(b.regNo),undefined,{numeric:true}));
+  const slots=[];
+  for(const hall of halls){
+    const sections=hall.sections||["A","B","C","D"];
+    const seatsPerSection=hall.seatsPerSection||Math.ceil((hall.capacity||(hall.rows||1)*(hall.cols||1))/sections.length);
+    // Interleaved order: A1,B1,C1,D1, A2,B2,C2,D2 ...
+    for(let num=1;num<=seatsPerSection;num++){
+      for(const sec of sections){
+        slots.push({hall:hall.name,seat:`${sec}${num}`});
+      }
+    }
+  }
+  return sorted.map((s,i)=>({
+    ...s,
+    assignedHall:slots[i]?.hall||"Unassigned",
+    assignedSeat:slots[i]?.seat||"—",
+  }));
+}
+
+// ─── Logo ───────────────────────────────────────────────────
+function Logo({size=32}){
+  return(
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <div style={{width:size,height:size,borderRadius:size*0.3,background:"linear-gradient(135deg,#63b3ed,#7f9cf5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.5,boxShadow:"0 4px 16px rgba(99,179,237,0.4)"}}>🎓</div>
       <div>
@@ -124,19 +150,19 @@ function Logo({size=32}) {
   );
 }
 
-function LandingPage({goLogin,goSignup}) {
+// ─── Landing ────────────────────────────────────────────────
+function LandingPage({goLogin,goSignup}){
   const stats=[{val:"2,400+",label:"Students"},{val:"48",label:"Departments"},{val:"99.9%",label:"Uptime"},{val:"12+",label:"Years"}];
   const features=[
-    {icon:"🎫",title:"Hall Tickets",desc:"Official exam hall tickets with QR verification",color:"#63b3ed"},
-    {icon:"📍",title:"Seat Details",desc:"Exact seat & hall assignments per exam",color:"#4fd1c5"},
-    {icon:"📅",title:"Exam Schedule",desc:"Complete timetable with real-time status",color:"#7f9cf5"},
+    {icon:"🎫",title:"Hall Tickets",desc:"Official exam hall tickets with seat details",color:"#63b3ed"},
+    {icon:"📍",title:"Auto Seating",desc:"Reg-number ordered auto seat assignment",color:"#4fd1c5"},
+    {icon:"⏱️",title:"Time Lock",desc:"Seats revealed only 1 hr before exam",color:"#7f9cf5"},
     {icon:"🔐",title:"Secure Access",desc:"Role-based authentication & data privacy",color:"#68d391"},
   ];
-  return (
+  return(
     <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0",overflow:"hidden",position:"relative"}}>
       <div className="orb" style={{width:600,height:600,top:-200,left:-200,background:"radial-gradient(circle,rgba(99,179,237,0.12) 0%,transparent 70%)"}}/>
       <div className="orb" style={{width:500,height:500,top:100,right:-150,background:"radial-gradient(circle,rgba(127,156,245,0.1) 0%,transparent 70%)"}}/>
-      <div className="orb" style={{width:400,height:400,bottom:0,left:"40%",background:"radial-gradient(circle,rgba(79,209,197,0.08) 0%,transparent 70%)"}}/>
       <header className="ep-header">
         <Logo size={36}/>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
@@ -174,7 +200,7 @@ function LandingPage({goLogin,goSignup}) {
         <div style={{display:"flex",gap:16,flexWrap:"wrap",justifyContent:"center"}}>
           {features.map((f,i)=>(
             <div key={i} className="feat-card fade-up" style={{animationDelay:`${0.1*i}s`}}>
-              <div style={{width:52,height:52,borderRadius:14,background:`rgba(${f.color==="#63b3ed"?"99,179,237":f.color==="#4fd1c5"?"79,209,197":f.color==="#7f9cf5"?"127,156,245":"104,211,145"},0.12)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,margin:"0 auto 16px",border:`1px solid ${f.color}30`}}>{f.icon}</div>
+              <div style={{width:52,height:52,borderRadius:14,background:`rgba(${f.color==="#63b3ed"?"99,179,237":f.color==="#4fd1c5"?"79,209,197":f.color==="#7f9cf5"?"127,156,245":f.color==="#68d391"?"104,211,145":"246,173,85"},0.12)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,margin:"0 auto 16px",border:`1px solid ${f.color}30`}}>{f.icon}</div>
               <div style={{fontSize:15,fontWeight:700,color:f.color,marginBottom:8}}>{f.title}</div>
               <div style={{fontSize:12,color:"#4a5568",lineHeight:1.6}}>{f.desc}</div>
             </div>
@@ -188,7 +214,8 @@ function LandingPage({goLogin,goSignup}) {
   );
 }
 
-function LoginPage({students,onSuccess,goBack,goSignup}) {
+// ─── Login ──────────────────────────────────────────────────
+function LoginPage({students,onSuccess,goBack,goSignup}){
   const [email,setEmail]=useState("");
   const [pass,setPass]=useState("");
   const [err,setErr]=useState("");
@@ -205,247 +232,459 @@ function LoginPage({students,onSuccess,goBack,goSignup}) {
       setErr("Invalid email or password. Please try again.");
     },600);
   };
-  return (
+  return(
     <div style={{minHeight:"100vh",background:"#060818",display:"flex",position:"relative",overflow:"hidden"}}>
       <div className="orb" style={{width:700,height:700,top:-300,right:-300,background:"radial-gradient(circle,rgba(127,156,245,0.12) 0%,transparent 70%)"}}/>
       <div className="orb" style={{width:500,height:500,bottom:-200,left:-200,background:"radial-gradient(circle,rgba(79,209,197,0.08) 0%,transparent 70%)"}}/>
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
         <div className="scale-in" style={{width:"100%",maxWidth:420}}>
           <button className="btn-back" onClick={goBack} style={{marginBottom:28}}>← Back to Home</button>
-          <div style={{marginBottom:36}}>
-            <Logo size={40}/>
-            <h2 style={{fontSize:26,fontWeight:800,marginTop:24,marginBottom:6,letterSpacing:-0.5}}>Welcome back</h2>
-            <p style={{color:"#4a5568",fontSize:14}}>Sign in to your portal account</p>
-          </div>
+          <div style={{marginBottom:36}}><Logo size={40}/></div>
+          <h2 style={{fontSize:26,fontWeight:800,marginBottom:6,letterSpacing:-0.5}}>Welcome back</h2>
+          <p style={{fontSize:14,color:"#718096",marginBottom:32}}>Sign in to access your exam details</p>
           {err&&<div className="err-box">⚠️ {err}</div>}
-          <div style={{marginBottom:18}}>
+          <div style={{marginBottom:16}}>
             <label className="ep-label">Email Address</label>
-            <input className="ep-input" value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="you@email.com"/>
+            <input className="ep-input" placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()}/>
           </div>
-          <div style={{marginBottom:28,position:"relative"}}>
+          <div style={{marginBottom:24,position:"relative"}}>
             <label className="ep-label">Password</label>
-            <input className="ep-input" value={pass} onChange={e=>setPass(e.target.value)} type={show?"text":"password"} placeholder="••••••••" onKeyDown={e=>e.key==="Enter"&&login()} style={{paddingRight:44}}/>
-            <button onClick={()=>setShow(!show)} style={{position:"absolute",right:14,top:34,background:"none",border:"none",cursor:"pointer",color:"#4a5568",fontSize:16}}>{show?"🙈":"👁️"}</button>
+            <input className="ep-input" type={show?"text":"password"} placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()} style={{paddingRight:48}}/>
+            <button onClick={()=>setShow(!show)} style={{position:"absolute",right:14,top:36,background:"none",border:"none",color:"#718096",cursor:"pointer",fontSize:16}}>{show?"🙈":"👁️"}</button>
           </div>
-          <button className="btn-primary" onClick={login} style={{width:"100%",padding:"14px",fontSize:15,borderRadius:13,justifyContent:"center"}}>
-            {loading?<span style={{animation:"spin 0.8s linear infinite",display:"inline-block"}}>⟳</span>:<span>Sign In →</span>}
+          <button className="btn-primary" onClick={login} disabled={loading} style={{width:"100%",padding:"14px",fontSize:15,justifyContent:"center",opacity:loading?.7:1}}>
+            <span>{loading?"Signing in…":"Sign In"}</span>
           </button>
-          <p style={{textAlign:"center",color:"#4a5568",fontSize:13,marginTop:20}}>
-            New student?{" "}<button onClick={goSignup} style={{background:"none",border:"none",color:"#63b3ed",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:600}}>Create account</button>
+          <p style={{textAlign:"center",marginTop:20,fontSize:13,color:"#4a5568"}}>
+            No account? <span style={{color:"#63b3ed",cursor:"pointer",fontWeight:600}} onClick={goSignup}>Register here</span>
           </p>
+
         </div>
       </div>
     </div>
   );
 }
 
-function SignupPage({goBack,onRegister}) {
-  const [f,setF]=useState({name:"",email:"",pass:"",confirm:""});
+// ─── Signup ─────────────────────────────────────────────────
+function SignupPage({goBack,onRegister}){
+  const [form,setForm]=useState({name:"",email:"",password:"",regNo:"",department:"",semester:""});
   const [err,setErr]=useState("");
   const [done,setDone]=useState(false);
-  const submit=()=>{
-    setErr("");
-    if(!f.name||!f.email||!f.pass)return setErr("All fields are required.");
-    if(f.pass!==f.confirm)return setErr("Passwords do not match.");
-    if(f.pass.length<6)return setErr("Password must be at least 6 characters.");
-    onRegister({id:Date.now(),name:f.name,email:f.email,password:f.pass,regNo:"",hallTicket:"",seatNumber:"",hallNumber:"",department:"",semester:"",exams:[]});
+  const doReg=()=>{
+    if(!form.name||!form.email||!form.password||!form.regNo){setErr("Please fill all required fields.");return;}
+    const id=Date.now();
+    onRegister({...form,id,hallTicket:"",assignedHall:"",assignedSeat:"",exams:[]});
     setDone(true);
   };
   if(done)return(
-    <div style={{minHeight:"100vh",background:"#060818",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div className="scale-in" style={{textAlign:"center",maxWidth:420,padding:20}}>
-        <div style={{width:80,height:80,borderRadius:"50%",background:"rgba(104,211,145,0.15)",border:"2px solid rgba(104,211,145,0.4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,margin:"0 auto 24px"}}>✅</div>
-        <h2 style={{fontSize:24,fontWeight:800,marginBottom:12}}>Registration Submitted!</h2>
-        <p style={{color:"#718096",lineHeight:1.7,marginBottom:28,fontSize:14}}>Your account request has been submitted. An administrator will review and activate your account.</p>
-        <button className="btn-back" onClick={goBack}>← Back to Login</button>
+    <div style={{minHeight:"100vh",background:"#060818",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div className="scale-in" style={{textAlign:"center",maxWidth:380}}>
+        <div style={{fontSize:64,marginBottom:16}}>✅</div>
+        <h2 style={{fontSize:24,fontWeight:800,marginBottom:10,color:"#68d391"}}>Registration Successful!</h2>
+        <p style={{color:"#718096",fontSize:14,lineHeight:1.7,marginBottom:28}}>Your account has been created. The admin will assign your hall ticket and seat details soon.</p>
+        <button className="btn-primary" onClick={goBack} style={{padding:"12px 32px"}}><span>← Back to Login</span></button>
       </div>
     </div>
   );
   return(
     <div style={{minHeight:"100vh",background:"#060818",display:"flex",alignItems:"center",justifyContent:"center",padding:20,position:"relative",overflow:"hidden"}}>
-      <div className="orb" style={{width:600,height:600,top:-200,right:-200,background:"radial-gradient(circle,rgba(99,179,237,0.1) 0%,transparent 70%)"}}/>
-      <div className="scale-in" style={{width:"100%",maxWidth:420}}>
-        <button className="btn-back" onClick={goBack} style={{marginBottom:28}}>← Back to Login</button>
-        <div style={{marginBottom:32}}>
-          <Logo size={38}/>
-          <h2 style={{fontSize:24,fontWeight:800,marginTop:22,marginBottom:6}}>Create account</h2>
-          <p style={{color:"#4a5568",fontSize:13}}>Register to access the student portal</p>
-        </div>
+      <div className="orb" style={{width:600,height:600,top:-200,right:-200,background:"radial-gradient(circle,rgba(104,211,145,0.08) 0%,transparent 70%)"}}/>
+      <div className="scale-in" style={{width:"100%",maxWidth:480}}>
+        <button className="btn-back" onClick={goBack} style={{marginBottom:28}}>← Back</button>
+        <div style={{marginBottom:28}}><Logo size={38}/></div>
+        <h2 style={{fontSize:24,fontWeight:800,marginBottom:6}}>Create Account</h2>
+        <p style={{fontSize:14,color:"#718096",marginBottom:28}}>Register with your college details</p>
         {err&&<div className="err-box">⚠️ {err}</div>}
-        {[["Full Name","name","text","Your full name"],["Email Address","email","email","you@email.com"],["Password","pass","password","Min. 6 characters"],["Confirm Password","confirm","password","Re-enter password"]].map(([label,key,type,ph])=>(
-          <div key={key} style={{marginBottom:16}}>
-            <label className="ep-label">{label}</label>
-            <input className="ep-input" value={f[key]} onChange={e=>setF({...f,[key]:e.target.value})} type={type} placeholder={ph} onKeyDown={e=>e.key==="Enter"&&submit()}/>
-          </div>
-        ))}
-        <button className="btn-primary" onClick={submit} style={{width:"100%",padding:"14px",fontSize:15,borderRadius:13,justifyContent:"center",marginTop:8}}><span>Create Account →</span></button>
-        <p style={{textAlign:"center",color:"#2d3748",fontSize:11,marginTop:14,lineHeight:1.7}}>After registration, admin will activate your account and assign exam details.</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:20}}>
+          {[["Full Name*","name","text"],["Reg. Number*","regNo","text"],["Email*","email","email"],["Password*","password","password"],["Department","department","text"],["Semester","semester","text"]].map(([label,key,type])=>(
+            <div key={key}>
+              <label className="ep-label">{label}</label>
+              <input className="ep-input" type={type} value={form[key]||""} onChange={e=>setForm(p=>({...p,[key]:e.target.value}))} placeholder={label.replace("*","")}/>
+            </div>
+          ))}
+        </div>
+        <button className="btn-primary" onClick={doReg} style={{width:"100%",padding:"14px",fontSize:15,justifyContent:"center"}}><span>Create Account</span></button>
       </div>
     </div>
   );
 }
 
-function StudentDashboard({student,onLogout}) {
-  const [tab,setTab]=useState("ticket");
-  const todayStr=new Date().toISOString().split("T")[0];
-  const nextExam=(student.exams||[]).find(e=>e.date>=todayStr);
+// ─── Countdown Component ────────────────────────────────────
+function Countdown({unlockDT,onUnlocked}){
+  const [cd,setCd]=useState(()=>getCountdown(unlockDT));
+  useEffect(()=>{
+    const t=setInterval(()=>{
+      const v=getCountdown(unlockDT);
+      setCd(v);
+      if(!v)onUnlocked();
+    },1000);
+    return()=>clearInterval(t);
+  },[unlockDT]);
+  if(!cd)return null;
   return(
-    <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0",display:"flex",flexDirection:"column"}}>
+    <div style={{display:"flex",gap:4,justifyContent:"center",margin:"16px 0"}}>
+      <div className="countdown-box"><div className="countdown-num">{pad(cd.h)}</div><div className="countdown-label">Hours</div></div>
+      <div style={{fontSize:28,fontWeight:900,color:"#fc8181",alignSelf:"center",marginTop:-8}}>:</div>
+      <div className="countdown-box"><div className="countdown-num">{pad(cd.m)}</div><div className="countdown-label">Mins</div></div>
+      <div style={{fontSize:28,fontWeight:900,color:"#fc8181",alignSelf:"center",marginTop:-8}}>:</div>
+      <div className="countdown-box"><div className="countdown-num">{pad(cd.s)}</div><div className="countdown-label">Secs</div></div>
+    </div>
+  );
+}
+
+// ─── Student Dashboard ──────────────────────────────────────
+function StudentDashboard({student,exam,onLogout}){
+  const [now,setNow]=useState(()=>new Date());
+  useEffect(()=>{
+    const t=setInterval(()=>setNow(new Date()),1000);
+    return()=>clearInterval(t);
+  },[]);
+  // Compute unlock time live from exam date+time (1 hour before), ignore stored unlockDateTime
+  const unlockDT=React.useMemo(()=>{
+    if(!exam?.date||!exam?.time)return null;
+    const dt=new Date(`${exam.date}T${exam.time}`);
+    dt.setHours(dt.getHours()-1);
+    return dt;
+  },[exam?.date,exam?.time]);
+  const seatAssigned=student.assignedSeat&&student.assignedSeat!=="—"&&student.assignedHall&&student.assignedHall!=="Unassigned";
+  const timeUnlocked=unlockDT?(now>=unlockDT):false;
+  // Seat visible ONLY when: seat is assigned AND unlock time has passed
+  const seatVisible=seatAssigned&&timeUnlocked;
+  // Separate states for better messaging
+  const notAssignedYet=!seatAssigned;
+  const assignedButLocked=seatAssigned&&!timeUnlocked;
+
+  return(
+    <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0"}}>
       <header className="ep-header">
         <Logo size={32}/>
-        <div style={{display:"flex",alignItems:"center",gap:14}}>
-          <div style={{textAlign:"right"}}>
-            <div style={{fontSize:14,fontWeight:600}}>{student.name}</div>
-            <div style={{fontSize:11,color:"#4a5568"}}>{student.regNo||"Student"}</div>
-          </div>
-          <div className="avatar" style={{width:36,height:36,fontSize:14}}>{student.name?.[0]}</div>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div className="avatar" style={{width:34,height:34,fontSize:13}}>{student.name?.[0]}</div>
+          <div style={{fontSize:13,fontWeight:600}}>{student.name}</div>
           <button className="btn-danger" onClick={onLogout} style={{padding:"7px 14px"}}>Logout</button>
         </div>
       </header>
-      <div style={{display:"flex",flex:1,overflow:"hidden"}}>
-        <aside className="ep-sidebar">
-          <div style={{fontSize:10,fontWeight:700,color:"#2d3748",letterSpacing:2,textTransform:"uppercase",marginBottom:12,paddingLeft:6}}>MENU</div>
-          {[["ticket","🎫","Hall Ticket"],["schedule","📅","Exam Schedule"],["profile","👤","My Profile"]].map(([id,icon,label])=>(
-            <button key={id} className={`nav-item${tab===id?" active":""}`} onClick={()=>setTab(id)}>
-              <span style={{fontSize:16}}>{icon}</span>{label}
-            </button>
-          ))}
-          <div style={{marginTop:"auto",paddingTop:16,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-            <button className="btn-back" onClick={onLogout} style={{width:"100%",justifyContent:"center"}}>⬅ Back to Home</button>
+      <div style={{maxWidth:820,margin:"0 auto",padding:"40px 24px"}}>
+        <div className="fade-up" style={{marginBottom:28}}>
+          <h2 style={{fontSize:22,fontWeight:800,marginBottom:4}}>Hello, {student.name.split(" ")[0]} 👋</h2>
+          <p style={{color:"#718096",fontSize:14}}>Here are your upcoming exam details.</p>
+        </div>
+
+        {/* Profile Card */}
+        <div className="fade-up-1 ep-card" style={{padding:24,marginBottom:20,display:"flex",gap:20,alignItems:"center",flexWrap:"wrap"}}>
+          <div className="avatar" style={{width:58,height:58,fontSize:22}}>{student.name?.[0]}</div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:18,fontWeight:800}}>{student.name}</div>
+            <div style={{fontSize:13,color:"#718096",marginTop:3}}>{student.email}</div>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:8}}>
+              <span className="badge badge-blue">📋 {student.regNo||"—"}</span>
+              <span className="badge badge-muted">{student.department||"—"}</span>
+              <span className="badge badge-muted">{student.semester||"—"}</span>
+            </div>
           </div>
-        </aside>
-        <main style={{flex:1,padding:32,overflowY:"auto"}}>
-          {tab==="ticket"&&(
-            <div className="fade-in">
-              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Hall Ticket</h2>
-              <div className="ticket-wrap">
-                <div className="ticket-header">
-                  <div style={{width:56,height:56,borderRadius:14,background:"linear-gradient(135deg,#63b3ed,#7f9cf5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26}}>🎓</div>
-                  <div>
-                    <div style={{color:"#63b3ed",fontSize:17,fontWeight:800}}>EduPortal — Examination System</div>
-                    <div style={{color:"#4a5568",fontSize:11,letterSpacing:2,textTransform:"uppercase",marginTop:2}}>Official Hall Ticket · Controller of Examinations</div>
-                  </div>
+        </div>
+
+        {/* Exam details */}
+        {!exam?(
+          <div className="fade-up-2 ep-card" style={{padding:32,textAlign:"center"}}>
+            <div style={{fontSize:40,marginBottom:12}}>📭</div>
+            <div style={{fontSize:16,fontWeight:700,color:"#718096"}}>No exam scheduled yet</div>
+            <div style={{fontSize:13,color:"#4a5568",marginTop:6}}>Admin hasn't published any exam for you yet. Check back later.</div>
+          </div>
+        ):(
+          <div className="fade-up-2">
+            <div style={{fontSize:13,fontWeight:700,color:"#718096",textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>📅 Upcoming Exam</div>
+            <div className="ep-card" style={{padding:24}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:10}}>
+                <div>
+                  <div style={{fontSize:20,fontWeight:800}}>{exam.examName}</div>
+                  <div style={{fontSize:13,color:"#718096",marginTop:4}}>{fmtDate(exam.date)} · {exam.time}</div>
                 </div>
-                <div className="ticket-body">
-                  <div style={{textAlign:"center",marginBottom:20,paddingBottom:14,borderBottom:"1px solid #e2e8f0"}}>
-                    <div style={{fontSize:13,fontWeight:700,textTransform:"uppercase",letterSpacing:2,color:"#2d3748"}}>Examination Hall Ticket · {student.semester}</div>
-                  </div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
-                    {[["Hall Ticket No.",student.hallTicket],["Register No.",student.regNo],["Student Name",student.name],["Department",student.department],["Hall Number",student.hallNumber],["Seat Number",student.seatNumber]].map(([k,v])=>(
-                      <div key={k} className="ticket-field">
-                        <div className="ticket-field-label">{k}</div>
-                        <div className="ticket-field-val">{v||"—"}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{background:"#f7fafc",borderRadius:12,padding:16,marginBottom:16}}>
-                    <div style={{fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:"#4a5568",marginBottom:12}}>Exam Schedule</div>
-                    <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,color:"#2d3748"}}>
-                      <thead><tr style={{background:"#edf2f7"}}>
-                        {["Date","Subject","Time","Hall","Seat"].map(h=><th key={h} style={{padding:"8px 12px",textAlign:"left",fontSize:11,fontWeight:700,color:"#718096",textTransform:"uppercase"}}>{h}</th>)}
-                      </tr></thead>
-                      <tbody>
-                        {(student.exams||[]).map((e,i)=>(
-                          <tr key={i} style={{borderBottom:"1px solid #e2e8f0"}}>
-                            <td style={{padding:"9px 12px"}}>{fmtDate(e.date)}</td>
-                            <td style={{padding:"9px 12px",fontWeight:600}}>{e.subject}</td>
-                            <td style={{padding:"9px 12px"}}>{e.time}</td>
-                            <td style={{padding:"9px 12px"}}>{e.hall}</td>
-                            <td style={{padding:"9px 12px",fontWeight:700,color:"#3182ce"}}>{e.seat}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#a0aec0",paddingTop:12,borderTop:"1px solid #e2e8f0"}}>
-                    <span>Computer generated. No physical signature required.</span>
-                    <span style={{fontWeight:700,color:"#4a5568"}}>Controller of Examinations · EduPortal</span>
-                  </div>
-                </div>
+                <span className={`badge ${seatVisible?"badge-green":notAssignedYet?"badge-amber":"badge-rose"}`}>{seatVisible?"🔓 Seat Revealed":notAssignedYet?"⏳ Not Assigned":"🔒 Seat Locked"}</span>
               </div>
-              {nextExam&&(
-                <div style={{marginTop:20,maxWidth:700,background:"linear-gradient(135deg,rgba(99,179,237,0.08),rgba(127,156,245,0.08))",border:"1px solid rgba(99,179,237,0.25)",borderRadius:14,padding:"16px 20px",display:"flex",gap:14,alignItems:"center"}}>
-                  <span style={{fontSize:24}}>⏰</span>
-                  <div>
-                    <div style={{fontWeight:700,color:"#63b3ed",fontSize:14}}>Next Exam: {nextExam.subject}</div>
-                    <div style={{color:"#718096",fontSize:13,marginTop:2}}>{fmtDate(nextExam.date)} · {nextExam.time} · {nextExam.hall} · Seat <strong style={{color:"#e2e8f0"}}>{nextExam.seat}</strong></div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          {tab==="schedule"&&(
-            <div className="fade-in">
-              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Exam Schedule</h2>
-              <div style={{maxWidth:700}}>
-                {(student.exams||[]).length===0&&<div style={{color:"#4a5568",fontSize:14,padding:32,textAlign:"center"}}>No exams scheduled yet.</div>}
-                {(student.exams||[]).map((e,i)=>{
-                  const isPast=e.date<todayStr,isToday=e.date===todayStr;
-                  return(
-                    <div key={i} className="ep-card" style={{padding:"18px 22px",marginBottom:10,display:"flex",justifyContent:"space-between",alignItems:"center",animation:`slideIn 0.3s ${i*0.05}s both`}}>
-                      <div>
-                        <div style={{fontSize:15,fontWeight:700,marginBottom:6,color:isPast?"#4a5568":"#e2e8f0"}}>{e.subject}</div>
-                        <div style={{fontSize:12,color:"#718096"}}>{fmtDate(e.date)} · {e.time}</div>
-                        <div style={{fontSize:12,color:"#4a5568",marginTop:4}}>📍 {e.hall} · Seat: <strong style={{color:"#63b3ed"}}>{e.seat}</strong></div>
-                      </div>
-                      <span className={`badge ${isToday?"badge-blue":isPast?"badge-muted":"badge-green"}`}>{isToday?"TODAY":isPast?"Done":"Upcoming"}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          {tab==="profile"&&(
-            <div className="fade-in">
-              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>My Profile</h2>
-              <div style={{maxWidth:500}}>
-                <div className="ep-card" style={{padding:28,marginBottom:16}}>
-                  <div style={{display:"flex",alignItems:"center",gap:18,marginBottom:28}}>
-                    <div className="avatar" style={{width:68,height:68,fontSize:28}}>{student.name?.[0]}</div>
-                    <div>
-                      <div style={{fontSize:20,fontWeight:800}}>{student.name}</div>
-                      <div style={{color:"#718096",fontSize:13,marginTop:4}}>{student.department} · {student.semester}</div>
-                      <div className="badge badge-blue" style={{marginTop:8}}>Student</div>
-                    </div>
-                  </div>
-                  {[["📧","Email",student.email],["🔑","Register No.",student.regNo],["🎫","Hall Ticket",student.hallTicket],["🏛️","Hall Number",student.hallNumber],["💺","Seat Number",student.seatNumber]].map(([icon,k,v])=>(
-                    <div key={k} style={{display:"flex",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid rgba(255,255,255,0.05)",fontSize:13}}>
-                      <span style={{color:"#718096"}}>{icon} {k}</span>
-                      <span style={{fontWeight:600}}>{v||"—"}</span>
+
+              {/* Seat reveal section */}
+              {seatVisible?(
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                  {[["🏛️ Hall",student.assignedHall||"—"],["💺 Seat",student.assignedSeat||"—"],["🎫 Hall Ticket",student.hallTicket||student.regNo||"—"],["📋 Reg. Number",student.regNo||"—"]].map(([label,val])=>(
+                    <div key={label} style={{background:"rgba(99,179,237,0.06)",border:"1px solid rgba(99,179,237,0.2)",borderRadius:12,padding:"14px 18px",borderLeft:"4px solid rgba(99,179,237,0.6)"}}>
+                      <div style={{fontSize:11,color:"#718096",textTransform:"uppercase",letterSpacing:.8,marginBottom:5}}>{label}</div>
+                      <div style={{fontSize:18,fontWeight:800,color:"#63b3ed"}}>{val}</div>
                     </div>
                   ))}
                 </div>
-                <div style={{padding:"14px 18px",background:"rgba(252,129,129,0.06)",border:"1px solid rgba(252,129,129,0.2)",borderRadius:12,fontSize:12,color:"#fc8181"}}>
-                  🔒 Profile details can only be updated by an Administrator.
+              ):notAssignedYet?(
+                <div className="lock-overlay">
+                  <div style={{fontSize:48,marginBottom:10}}>⏳</div>
+                  <div style={{fontSize:16,fontWeight:700,color:"#f6ad55",marginBottom:6}}>Seat Not Assigned Yet</div>
+                  <div style={{fontSize:13,color:"#718096"}}>Admin hasn't assigned your seat yet. Check back later.</div>
                 </div>
-              </div>
+              ):(
+                <div className="lock-overlay">
+                  <div style={{fontSize:48,marginBottom:10}}>🔒</div>
+                  <div style={{fontSize:16,fontWeight:700,color:"#fc8181",marginBottom:6}}>Seat Details Locked</div>
+                  <div style={{fontSize:13,color:"#718096",marginBottom:16}}>Your seat has been assigned. It will be revealed at the scheduled unlock time.</div>
+                  {exam.unlockDateTime&&<Countdown unlockDT={exam.unlockDateTime} onUnlocked={()=>setUnlockedExams(p=>({...p,[exam.id]:true}))}/>}
+                  {exam.unlockDateTime&&<div style={{fontSize:12,color:"#4a5568",marginTop:8}}>Unlocks at: {new Date(exam.unlockDateTime).toLocaleString("en-IN")}</div>}
+                </div>
+              )}
             </div>
-          )}
-        </main>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function AdminDashboard({students,setStudents,onLogout}) {
+// ─── CSV Parser ─────────────────────────────────────────────
+function parseCSV(text){
+  const lines=text.trim().split("\n");
+  if(lines.length<2)return[];
+  const raw=lines[0].split(",").map(h=>h.trim());
+  const headers=raw.map(h=>h.toLowerCase().replace(/\s+/g,"_").replace(/[()]/g,""));
+  const isMarksSheet=raw.some(h=>/prn/i.test(h)||/name of student/i.test(h)||/adm.?no/i.test(h));
+  return lines.slice(1).map((line,i)=>{
+    const vals=line.split(",").map(v=>v.trim().replace(/^"|"$/g,""));
+    const obj={id:Date.now()+i,password:"Student@123",hallTicket:"",assignedHall:"",assignedSeat:"",exams:[]};
+    headers.forEach((h,idx)=>{obj[h]=vals[idx]||"";});
+    if(isMarksSheet){
+      const nameKey=headers.find(h=>h.includes("name"));
+      const prnKey=headers.find(h=>h==="prn");
+      const admKey=headers.find(h=>h.includes("adm"));
+      obj.name=nameKey?obj[nameKey]:"";
+      obj.regNo=prnKey?obj[prnKey]:(admKey?obj[admKey]:"");
+      obj.hallTicket=admKey?obj[admKey]:"";
+      obj.email=obj.regNo?obj.regNo.toLowerCase()+"@student.edu":"";
+      const skipFlags=["tc","agniveer","rollout",""];
+      if(!obj.name||skipFlags.includes(obj.name.toLowerCase()))return null;
+      if(!obj.regNo||obj.regNo.length<4)return null;
+    } else {
+      if(!obj.name&&obj.student_name)obj.name=obj.student_name;
+      if(!obj.regNo)obj.regNo=obj.prn||obj.regno||obj.reg_no||obj.registration_number||"";
+      if(!obj.email)obj.email=obj.regNo?obj.regNo.toLowerCase()+"@student.edu":"";
+    }
+    return obj;
+  }).filter(Boolean).filter(s=>s.name&&s.regNo);
+}
+
+
+// ─── Download Helpers ────────────────────────────────────────
+function getSortedSeating(students){
+  return [...students]
+    .filter(s=>s.assignedSeat&&s.assignedSeat!=="—")
+    .sort((a,b)=>String(a.regNo).localeCompare(String(b.regNo),undefined,{numeric:true}));
+}
+
+function blobDownload(filename, content, mime){
+  try{
+    const blob=new Blob([content],{type:mime});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(e){console.error("Download error:",e);}
+}
+
+function dlCSV(students,exam){
+  const rows=getSortedSeating(students);
+  const lines=[
+    exam?`Exam: ${exam.examName||""} | Date: ${exam.date||""} | Time: ${exam.time||""}`:null,
+    ["#","Name","Reg No","Hall","Seat"].join(","),
+    ...rows.map((s,i)=>[i+1,`"${s.name}"`,s.regNo,s.assignedHall,s.assignedSeat].join(","))
+  ].filter(Boolean).join("\n");
+  blobDownload("seating_arrangement.csv", lines, "text/csv;charset=utf-8");
+}
+
+function dlExcel(students,exam){
+  const rows=getSortedSeating(students);
+  const title=exam?`${exam.examName||"Exam"} - ${exam.date||""}`:"Seating Arrangement";
+  const esc=v=>String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const hdr=["#","Name","Reg No","Hall","Seat"];
+  let html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>`;
+  html+=`<table border="1"><tr><td colspan="5" style="font-weight:bold;font-size:14px">${esc(title)}</td></tr>`;
+  html+=`<tr>${hdr.map(h=>`<th style="background:#1a202c;color:#fff;font-weight:bold">${h}</th>`).join("")}</tr>`;
+  rows.forEach((s,i)=>{
+    html+=`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${esc(s.regNo)}</td><td>${esc(s.assignedHall)}</td><td style="font-weight:bold;color:#2563eb">${esc(s.assignedSeat)}</td></tr>`;
+  });
+  html+=`</table></body></html>`;
+  blobDownload("seating_arrangement.xls", html, "application/vnd.ms-excel;charset=utf-8");
+}
+
+function dlPDF(students,exam){
+  const rows=getSortedSeating(students);
+  const title=exam?`${exam.examName||"Seating Arrangement"}`:"Seating Arrangement";
+  const subtitle=exam?`Date: ${exam.date||""}  |  Time: ${exam.time||""}  |  Total Students: ${rows.length}`:`Total Students: ${rows.length}`;
+  const tableRows=rows.map((s,i)=>`
+    <tr style="background:${i%2===0?"#f9fafb":"#fff"}">
+      <td>${i+1}</td><td>${s.name}</td><td>${s.regNo}</td><td>${s.assignedHall}</td><td style="font-weight:700;color:#2563eb">${s.assignedSeat}</td>
+    </tr>`).join("");
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/><style>
+    body{font-family:Arial,sans-serif;margin:32px;color:#1a202c}
+    h1{font-size:22px;font-weight:900;margin-bottom:4px}
+    .sub{font-size:13px;color:#718096;margin-bottom:24px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#1a202c;color:#fff;padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+    td{padding:9px 14px;border-bottom:1px solid #e2e8f0}
+    .footer{margin-top:24px;font-size:11px;color:#a0aec0;text-align:center}
+  </style></head><body>
+    <h1>${title}</h1><div class="sub">${subtitle}</div>
+    <table><thead><tr><th>#</th><th>Name</th><th>Reg No</th><th>Hall</th><th>Seat</th></tr></thead>
+    <tbody>${tableRows}</tbody></table>
+    <div class="footer">Generated by EduPortal · ${new Date().toLocaleString("en-IN")}</div>
+  </body></html>`;
+  const w=window.open("","_blank");
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),600);
+}
+
+function dlDOCX(students,exam){
+  const rows=getSortedSeating(students);
+  const title=exam?`${exam.examName||"Seating Arrangement"}`:"Seating Arrangement";
+  const subtitle=exam?`Date: ${exam.date||""}  |  Time: ${exam.time||""}  |  Total Students: ${rows.length}`:`Total Students: ${rows.length}`;
+  const tableRows=rows.map((s,i)=>`
+    <w:tr>
+      <w:tc><w:p><w:r><w:t>${i+1}</w:t></w:r></w:p></w:tc>
+      <w:tc><w:p><w:r><w:t>${s.name}</w:t></w:r></w:p></w:tc>
+      <w:tc><w:p><w:r><w:t>${s.regNo}</w:t></w:r></w:p></w:tc>
+      <w:tc><w:p><w:r><w:t>${s.assignedHall}</w:t></w:r></w:p></w:tc>
+      <w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>${s.assignedSeat}</w:t></w:r></w:p></w:tc>
+    </w:tr>`).join("");
+  const xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?mso-application progid="Word.Document"?>
+<w:wordDocument xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml">
+<w:body>
+<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/></w:rPr><w:t>${title}</w:t></w:r></w:p>
+<w:p><w:r><w:rPr><w:color w:val="718096"/></w:rPr><w:t>${subtitle}</w:t></w:r></w:p>
+<w:p><w:r><w:t></w:t></w:r></w:p>
+<w:tbl>
+<w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>
+  <w:top w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/>
+  <w:left w:val="single" w:sz="4"/><w:right w:val="single" w:sz="4"/>
+  <w:insideH w:val="single" w:sz="4"/><w:insideV w:val="single" w:sz="4"/>
+</w:tblBorders></w:tblPr>
+<w:tr>
+  <w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>#</w:t></w:r></w:p></w:tc>
+  <w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Name</w:t></w:r></w:p></w:tc>
+  <w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Reg No</w:t></w:r></w:p></w:tc>
+  <w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Hall</w:t></w:r></w:p></w:tc>
+  <w:tc><w:p><w:r><w:rPr><w:b/></w:rPr><w:t>Seat</w:t></w:r></w:p></w:tc>
+</w:tr>
+${tableRows}
+</w:tbl>
+<w:p><w:r><w:t></w:t></w:r></w:p>
+<w:p><w:r><w:rPr><w:color w:val="a0aec0"/><w:sz w:val="18"/></w:rPr><w:t>Generated by EduPortal · ${new Date().toLocaleString("en-IN")}</w:t></w:r></w:p>
+</w:body></w:wordDocument>`;
+  blobDownload("seating_arrangement.doc", xml, "application/msword;charset=utf-8");
+}
+
+// ─── Admin Dashboard ─────────────────────────────────────────
+function AdminDashboard({students,setStudents,exam,setExam,halls,setHalls,onLogout}){
   const [tab,setTab]=useState("overview");
-  const [editS,setEditS]=useState(null);
+
+  // Students tab state
   const [addOpen,setAddOpen]=useState(false);
+  const [editS,setEditS]=useState(null);
   const [delId,setDelId]=useState(null);
-  const [editExams,setEditExams]=useState(null);
-  const emptyS={name:"",email:"",password:"",regNo:"",hallTicket:"",seatNumber:"",hallNumber:"",department:"",semester:""};
-  const [newS,setNewS]=useState(emptyS);
-  const saveEdit=()=>{setStudents(students.map(s=>s.id===editS.id?editS:s));setEditS(null);};
-  const doDelete=()=>{setStudents(students.filter(s=>s.id!==delId));setDelId(null);};
-  const doAdd=()=>{setStudents([...students,{...newS,id:Date.now(),exams:[]}]);setAddOpen(false);setNewS(emptyS);};
-  const saveExams=()=>{setStudents(students.map(s=>s.id===editExams.id?editExams:s));setEditExams(null);};
-  const FIELDS=[["Name","name"],["Email","email"],["Password","password"],["Reg No.","regNo"],["Hall Ticket","hallTicket"],["Seat No.","seatNumber"],["Hall No.","hallNumber"],["Department","department"],["Semester","semester"]];
+  const [newS,setNewS]=useState({});
+  const [csvMsg,setCsvMsg]=useState("");
+  const fileRef=useRef();
+  const dragRef=useRef();
+
+  // Seating tab state
+  // halls & setHalls come from App (persisted in localStorage)
+  const [newHall,setNewHall]=useState({name:"",capacity:40});
+  const [seatingDone,setSeatingDone]=useState(false);
+  const hasSeating=seatingDone||students.some(s=>s.assignedSeat&&s.assignedSeat!=="—");
+  const [arranged,setArranged]=useState([]);
+
+  // Exam tab state
+  const [examForm,setExamForm]=useState(exam||{id:1,examName:"",date:"",time:"",unlockDateTime:""});
+  const [examSaved,setExamSaved]=useState(false);
+
+  const FIELDS=[["Full Name","name"],["Reg. Number","regNo"],["Email","email"],["Password","password"],["Department","department"],["Semester","semester"],["Hall Ticket","hallTicket"]];
+
+  const doAdd=()=>{if(!newS.name||!newS.regNo){return;}const id=Date.now();setStudents(p=>[...p,{...newS,id,assignedHall:"",assignedSeat:"",exams:[]}]);setAddOpen(false);setNewS({});setSeatingDone(false);};
+  const saveEdit=()=>{setStudents(p=>p.map(s=>s.id===editS.id?editS:s));setEditS(null);};
+  const doDelete=()=>{setStudents(p=>p.filter(s=>s.id!==delId));setDelId(null);setSeatingDone(false);};
+
+  // CSV Upload
+  const handleCSV=text=>{
+    const parsed=parseCSV(text);
+    if(!parsed.length){setCsvMsg("❌ Could not parse CSV. Check format.");return;}
+    setStudents(prev=>{
+      const existing=new Set(prev.map(s=>s.regNo));
+      const fresh=parsed.filter(p=>!existing.has(p.regNo));
+      return[...prev,...fresh];
+    });
+    setCsvMsg(`✅ Imported ${parsed.length} student(s) successfully.`);
+    setSeatingDone(false);
+    setTimeout(()=>setCsvMsg(""),4000);
+  };
+  const onFileChange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=ev=>handleCSV(ev.target.result);r.readAsText(f);
+  };
+  const onDrop=e=>{
+    e.preventDefault();dragRef.current?.classList.remove("drag-over");
+    const f=e.dataTransfer.files[0];if(!f)return;
+    const r=new FileReader();r.onload=ev=>handleCSV(ev.target.result);r.readAsText(f);
+  };
+
+  // Auto seating
+  const doArrangeSeating=()=>{
+    if(!students.length||!halls.length)return;
+    const result=assignSeats(students,halls);
+    setStudents(result);
+    setArranged(result);
+    setSeatingDone(true);
+  };
+  const addHall=()=>{
+    if(!newHall.name)return;
+    const cap=parseInt(newHall.capacity)||40;
+    const allSecs=["A","B","C","D","E","F"];
+    const numSecs=cap<=15?2:cap<=30?3:cap<=80?4:cap<=120?5:6;
+    const secs=allSecs.slice(0,numSecs);
+    const seatsPerSection=Math.ceil(cap/secs.length);
+    setHalls(p=>[...p,{id:Date.now(),name:newHall.name,capacity:cap,sections:secs,seatsPerSection,rows:seatsPerSection,cols:secs.length}]);
+    setNewHall({name:"",capacity:40});
+    setSeatingDone(false);
+  };
+  const removeHall=id=>setHalls(p=>p.filter(h=>h.id!==id));
+
+  // Exam config
+  const saveExam=()=>{
+    // Always auto-calculate unlock = exam time - 1 hour on save
+    let finalForm={...examForm,id:examForm.id||1};
+    if(examForm.date&&examForm.time){
+      const dt=new Date(`${examForm.date}T${examForm.time}`);
+      dt.setHours(dt.getHours()-1);
+      finalForm.unlockDateTime=dt.toISOString().slice(0,16);
+    }
+    setExam(finalForm);
+    setExamForm(finalForm);
+    setExamSaved(true);
+    setTimeout(()=>setExamSaved(false),3000);
+  };
+  const autoUnlock=()=>{
+    if(!examForm.date||!examForm.time)return;
+    const dt=new Date(`${examForm.date}T${examForm.time}`);
+    dt.setHours(dt.getHours()-1);
+    setExamForm(p=>({...p,unlockDateTime:dt.toISOString().slice(0,16)}));
+  };
+
+  // Stats
+  const totalSeats=halls.reduce((a,h)=>a+(h.capacity||(h.rows||1)*(h.cols||1)),0);
   const statCards=[
     {icon:"👥",label:"Total Students",val:students.length,color:"#63b3ed"},
-    {icon:"📅",label:"Total Exams",val:students.reduce((a,s)=>a+(s.exams?.length||0),0),color:"#68d391"},
-    {icon:"🏛️",label:"Unique Halls",val:[...new Set(students.map(s=>s.hallNumber).filter(Boolean))].length,color:"#f6ad55"},
-    {icon:"📚",label:"Departments",val:[...new Set(students.map(s=>s.department).filter(Boolean))].length,color:"#7f9cf5"},
+    {icon:"🏛️",label:"Total Halls",val:halls.length,color:"#4fd1c5"},
+    {icon:"💺",label:"Total Seats",val:totalSeats,color:"#7f9cf5"},
+    {icon:"✅",label:"Assigned",val:students.filter(s=>s.assignedSeat&&s.assignedSeat!=="—").length,color:"#68d391"},
   ];
+
   return(
     <div style={{minHeight:"100vh",background:"#060818",color:"#e2e8f0",display:"flex",flexDirection:"column"}}>
       <header className="ep-header">
@@ -458,16 +697,19 @@ function AdminDashboard({students,setStudents,onLogout}) {
       <div style={{display:"flex",flex:1,overflow:"hidden"}}>
         <aside className="ep-sidebar">
           <div style={{fontSize:10,fontWeight:700,color:"#2d3748",letterSpacing:2,textTransform:"uppercase",marginBottom:12,paddingLeft:6}}>ADMIN PANEL</div>
-          {[["overview","📊","Overview"],["students","👥","Students"],["exams","📋","Manage Exams"]].map(([id,icon,label])=>(
+          {[["overview","📊","Overview"],["students","👥","Students"],["seating","💺","Seating"],["exam","📅","Exam Config"]].map(([id,icon,label])=>(
             <button key={id} className={`nav-item${tab===id?" active":""}`} onClick={()=>setTab(id)}>
               <span style={{fontSize:16}}>{icon}</span>{label}
             </button>
           ))}
           <div style={{marginTop:"auto",paddingTop:16,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
-            <button className="btn-back" onClick={onLogout} style={{width:"100%",justifyContent:"center"}}>⬅ Back to Home</button>
+            <button className="btn-back" onClick={onLogout} style={{width:"100%",justifyContent:"center"}}>⬅ Logout</button>
           </div>
         </aside>
+
         <main style={{flex:1,padding:32,overflowY:"auto"}}>
+
+          {/* ── OVERVIEW ── */}
           {tab==="overview"&&(
             <div className="fade-in">
               <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Dashboard Overview</h2>
@@ -480,30 +722,71 @@ function AdminDashboard({students,setStudents,onLogout}) {
                   </div>
                 ))}
               </div>
+              {exam&&(
+                <div className="ep-card" style={{padding:20,marginBottom:20,background:"rgba(99,179,237,0.04)"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#718096",textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>📅 Active Exam</div>
+                  <div style={{display:"flex",gap:16,flexWrap:"wrap",alignItems:"center"}}>
+                    <div style={{fontSize:18,fontWeight:800}}>{exam.examName||"—"}</div>
+                    <span className="badge badge-blue">{fmtDate(exam.date)}</span>
+                    <span className="badge badge-muted">{exam.time}</span>
+                    <span className="badge badge-amber">🔓 Unlocks: {exam.unlockDateTime?new Date(exam.unlockDateTime).toLocaleString("en-IN"):"Not set"}</span>
+                  </div>
+                </div>
+              )}
               <div className="ep-card" style={{padding:24}}>
                 <div style={{fontSize:14,fontWeight:700,marginBottom:18,color:"#a0aec0"}}>All Registered Students</div>
-                <table className="ep-table">
-                  <thead><tr><th>Student</th><th>Reg No.</th><th>Department</th><th>Hall Ticket</th><th>Status</th></tr></thead>
-                  <tbody>
-                    {students.map(s=>(
-                      <tr key={s.id}>
-                        <td><div style={{display:"flex",alignItems:"center",gap:10}}><div className="avatar" style={{width:30,height:30,fontSize:12}}>{s.name?.[0]}</div><span style={{fontWeight:600}}>{s.name}</span></div></td>
-                        <td>{s.regNo||"—"}</td><td>{s.department||"—"}</td>
-                        <td><span className="badge badge-blue">{s.hallTicket||"Pending"}</span></td>
-                        <td><span className={`badge ${s.hallTicket?"badge-green":"badge-amber"}`}>{s.hallTicket?"Active":"Pending"}</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div style={{overflowX:"auto"}}>
+                  <table className="ep-table">
+                    <thead><tr><th>Student</th><th>Reg No.</th><th>Department</th><th>Hall</th><th>Seat</th><th>Status</th></tr></thead>
+                    <tbody>
+                      {students.map(s=>(
+                        <tr key={s.id}>
+                          <td><div style={{display:"flex",alignItems:"center",gap:10}}><div className="avatar" style={{width:30,height:30,fontSize:12}}>{s.name?.[0]}</div><span style={{fontWeight:600}}>{s.name}</span></div></td>
+                          <td>{s.regNo||"—"}</td>
+                          <td>{s.department||"—"}</td>
+                          <td><span className="badge badge-blue">{s.assignedHall||"—"}</span></td>
+                          <td><span className="badge badge-muted">{s.assignedSeat||"—"}</span></td>
+                          <td><span className={`badge ${s.assignedSeat&&s.assignedSeat!=="—"?"badge-green":"badge-amber"}`}>{s.assignedSeat&&s.assignedSeat!=="—"?"Assigned":"Pending"}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
+
+          {/* ── STUDENTS ── */}
           {tab==="students"&&(
             <div className="fade-in">
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
-                <h2 style={{fontSize:22,fontWeight:800,letterSpacing:-0.5}}>Manage Students</h2>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+                <h2 style={{fontSize:22,fontWeight:800,letterSpacing:-0.5}}>Students</h2>
                 <button className="btn-primary" onClick={()=>setAddOpen(true)} style={{padding:"10px 22px",fontSize:13}}><span>+ Add Student</span></button>
               </div>
+
+              {/* CSV Upload */}
+              <div className="ep-card" style={{padding:20,marginBottom:24}}>
+                <div style={{fontSize:14,fontWeight:700,marginBottom:4,color:"#a0aec0"}}>📤 Upload Student Data (CSV)</div>
+                <div style={{fontSize:12,color:"#4a5568",marginBottom:12}}>CSV format: name, regNo, email, department, semester</div>
+                {csvMsg&&<div className={csvMsg.startsWith("✅")?"success-box":"err-box"}>{csvMsg}</div>}
+                <div
+                  ref={dragRef}
+                  className="drop-zone"
+                  onClick={()=>fileRef.current?.click()}
+                  onDragOver={e=>{e.preventDefault();dragRef.current?.classList.add("drag-over");}}
+                  onDragLeave={()=>dragRef.current?.classList.remove("drag-over")}
+                  onDrop={onDrop}
+                >
+                  <div style={{fontSize:28,marginBottom:8}}>📁</div>
+                  <div style={{fontSize:14,fontWeight:600,color:"#63b3ed"}}>Click to upload or drag & drop CSV</div>
+                  <div style={{fontSize:12,color:"#4a5568",marginTop:4}}>Duplicate reg numbers will be skipped</div>
+                </div>
+                <input ref={fileRef} type="file" accept=".csv" style={{display:"none"}} onChange={onFileChange}/>
+                <div style={{marginTop:10,fontSize:11,color:"#4a5568"}}>
+                  <strong style={{color:"#718096"}}>Sample CSV:</strong> name,regNo,email,department,semester
+                </div>
+              </div>
+
               {students.map(s=>(
                 <div key={s.id} className="student-row">
                   <div style={{display:"flex",alignItems:"center",gap:14}}>
@@ -511,48 +794,202 @@ function AdminDashboard({students,setStudents,onLogout}) {
                     <div>
                       <div style={{fontWeight:700,fontSize:15}}>{s.name}</div>
                       <div style={{fontSize:12,color:"#718096",marginTop:2}}>{s.regNo||"—"} · {s.department||"—"} · {s.semester||"—"}</div>
-                      <div style={{fontSize:11,color:"#4a5568",marginTop:3}}>🎫 {s.hallTicket||"—"} · 🏛️ {s.hallNumber||"—"} · 💺 {s.seatNumber||"—"}</div>
+                      <div style={{fontSize:11,color:"#4a5568",marginTop:3}}>🏛️ {s.assignedHall||"Not assigned"} · 💺 {s.assignedSeat||"—"}</div>
                     </div>
                   </div>
                   <div style={{display:"flex",gap:8,flexShrink:0}}>
                     <button className="btn-edit" onClick={()=>setEditS({...s})}>✏️ Edit</button>
-                    <button className="btn-danger" onClick={()=>setDelId(s.id)}>🗑️ Delete</button>
+                    <button className="btn-danger" onClick={()=>setDelId(s.id)}>🗑️</button>
                   </div>
                 </div>
               ))}
             </div>
           )}
-          {tab==="exams"&&(
+
+          {/* ── SEATING ── */}
+          {tab==="seating"&&(
             <div className="fade-in">
-              <h2 style={{fontSize:22,fontWeight:800,marginBottom:24,letterSpacing:-0.5}}>Manage Exam Details</h2>
-              {students.map(s=>(
-                <div key={s.id} className="ep-card" style={{padding:20,marginBottom:14}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                    <div style={{display:"flex",alignItems:"center",gap:12}}>
-                      <div className="avatar" style={{width:36,height:36,fontSize:14}}>{s.name?.[0]}</div>
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:6,letterSpacing:-0.5}}>Auto Seating Arrangement</h2>
+              <p style={{fontSize:13,color:"#718096",marginBottom:24}}>Students are assigned interleaved section seats in Reg. No. order — A1, B1, C1, D1, A2, B2, C2, D2...</p>
+
+              {/* Hall configs */}
+              <div className="ep-card" style={{padding:22,marginBottom:20}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#a0aec0",marginBottom:16}}>🏛️ Hall Configuration</div>
+                {halls.map(h=>(
+                  <div key={h.id} className="hall-config-card">
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
-                        <div style={{fontWeight:700,fontSize:14}}>{s.name}</div>
-                        <div style={{fontSize:12,color:"#4a5568"}}>{s.regNo||"—"} · {s.department||"—"}</div>
+                        <span style={{fontWeight:700,color:"#63b3ed"}}>{h.name}</span>
+                        <span style={{fontSize:12,color:"#718096",marginLeft:10}}>Capacity: <strong style={{color:"#68d391"}}>{h.capacity||(h.rows*h.cols)}</strong> seats · Sections: <strong style={{color:"#f6ad55"}}>{(h.sections||["A","B","C","D"]).join(", ")}</strong> · {h.seatsPerSection||Math.ceil((h.capacity||32)/(h.sections||["A","B","C","D"]).length)} seats/section</span>
                       </div>
+                      <button className="btn-danger" onClick={()=>{removeHall(h.id);setSeatingDone(false);}}>Remove</button>
                     </div>
-                    <div style={{display:"flex",gap:8}}>
-                      <button className="btn-edit" onClick={()=>setEditExams({...s})}>✏️ Edit Exams</button>
-                      <button className="btn-green" onClick={()=>setEditExams({...s,exams:[...(s.exams||[]),{date:"",subject:"",time:"",hall:s.hallNumber||"",seat:s.seatNumber||""}]})}>+ Add</button>
+                    {/* mini seat grid preview — each row is one number, sections grouped with gap */}
+                    <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:4}}>
+                      {(()=>{
+                        const secs=h.sections||["A","B","C","D"];
+                        const sps=h.seatsPerSection||Math.ceil((h.capacity||32)/secs.length);
+                        const secColors={"A":"rgba(99,179,237,0.25)","B":"rgba(104,211,145,0.25)","C":"rgba(246,173,85,0.25)","D":"rgba(252,129,129,0.25)","E":"rgba(127,156,245,0.25)","F":"rgba(79,209,197,0.25)"};
+                        const secBorder={"A":"rgba(99,179,237,0.5)","B":"rgba(104,211,145,0.5)","C":"rgba(246,173,85,0.5)","D":"rgba(252,129,129,0.5)","E":"rgba(127,156,245,0.5)","F":"rgba(79,209,197,0.5)"};
+                        const secText={"A":"#63b3ed","B":"#68d391","C":"#f6ad55","D":"#fc8181","E":"#7f9cf5","F":"#4fd1c5"};
+                        const rows=[];
+                        const maxShow=Math.min(sps,6);
+                        for(let num=1;num<=maxShow;num++){
+                          const rowCells=[];
+                          secs.forEach((sec,si)=>{
+                            const label=`${sec}${num}`;
+                            const occupied=students.find(s=>s.assignedHall===h.name&&s.assignedSeat===label);
+                            // add gap after every 2 sections
+                            if(si>0 && si%2===0){
+                              rowCells.push(<div key={`gap-${num}-${si}`} style={{width:10}}/>);
+                            }
+                            rowCells.push(
+                              <div key={label}
+                                style={{
+                                  width:38,height:28,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",
+                                  fontSize:11,fontWeight:700,border:`1px solid ${occupied?"rgba(99,179,237,0.6)":secBorder[sec]||"rgba(255,255,255,0.15)"}`,
+                                  background:occupied?"rgba(99,179,237,0.2)":(secColors[sec]||"rgba(255,255,255,0.04)"),
+                                  color:occupied?"#63b3ed":(secText[sec]||"#718096"),
+                                  transition:"all 0.2s"
+                                }}
+                                title={occupied?occupied.name:label}
+                              >{label}</div>
+                            );
+                          });
+                          rows.push(<div key={num} style={{display:"flex",gap:4,alignItems:"center"}}>{rowCells}</div>);
+                        }
+                        if(sps>6) rows.push(
+                          <div key="more" style={{fontSize:11,color:"#4a5568",paddingLeft:2,marginTop:2}}>
+                            ···  {(sps-6)*secs.length} more seats
+                          </div>
+                        );
+                        return rows;
+                      })()}
                     </div>
                   </div>
-                  {(s.exams||[]).length===0?<div style={{fontSize:12,color:"#2d3748",fontStyle:"italic"}}>No exams added yet.</div>
-                  :(s.exams||[]).map((e,i)=>(
-                    <div key={i} style={{background:"rgba(255,255,255,0.03)",borderRadius:8,padding:"9px 14px",marginBottom:6,fontSize:12,display:"flex",justifyContent:"space-between"}}>
-                      <span><strong style={{color:"#63b3ed"}}>{e.subject||"—"}</strong> · {fmtDate(e.date)} · {e.time||"—"}</span>
-                      <span style={{color:"#4a5568"}}>{e.hall} · {e.seat}</span>
+                ))}
+                {/* Add hall */}
+                <div style={{display:"flex",gap:10,alignItems:"flex-end",flexWrap:"wrap",marginTop:14}}>
+                  <div style={{flex:2,minWidth:120}}>
+                    <label className="ep-label">Hall Name</label>
+                    <input className="ep-input" placeholder="e.g. Hall-C" value={newHall.name} onChange={e=>setNewHall(p=>({...p,name:e.target.value}))}/>
+                  </div>
+                  <div style={{flex:1,minWidth:80}}>
+                    <label className="ep-label">Capacity</label>
+                    <input className="ep-input" type="number" min={1} max={500} placeholder="e.g. 40" value={newHall.capacity} onChange={e=>setNewHall(p=>({...p,capacity:e.target.value}))}/>
+                  </div>
+                  <div style={{flex:1,minWidth:120,display:"flex",alignItems:"flex-end",paddingBottom:2}}>
+                    <div style={{background:"rgba(246,173,85,0.08)",border:"1px solid rgba(246,173,85,0.25)",borderRadius:10,padding:"10px 14px",width:"100%"}}>
+                      <div style={{fontSize:11,color:"#718096",marginBottom:4,fontWeight:600,textTransform:"uppercase",letterSpacing:0.8}}>Auto Sections</div>
+                      <div style={{fontSize:13,color:"#f6ad55",fontWeight:700}}>
+                        {(()=>{const cap=parseInt(newHall.capacity)||40;const n=cap<=15?2:cap<=30?3:cap<=80?4:cap<=120?5:6;return["A","B","C","D","E","F"].slice(0,n).join(", ")+" (auto)"})()}
+                      </div>
                     </div>
-                  ))}
+                  </div>
+                  <button className="btn-green" onClick={addHall} style={{marginBottom:1,flexShrink:0}}>+ Add Hall</button>
                 </div>
-              ))}
+              </div>
+
+              {/* Arrange button */}
+              <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:20,flexWrap:"wrap"}}>
+                <button className="btn-primary" onClick={doArrangeSeating} style={{padding:"12px 28px",fontSize:14}}>
+                  <span>⚡ Auto-Arrange Seats (by Reg No.)</span>
+                </button>
+                <div style={{fontSize:13,color:"#718096"}}>{students.length} students · {totalSeats} seats available</div>
+                {totalSeats<students.length&&<span className="badge badge-rose">⚠️ Not enough seats!</span>}
+              </div>
+
+              {/* Download + Seating Table — always shown in seating tab */}
+              <div className="ep-card fade-in" style={{padding:22}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"#a0aec0"}}>📋 Seating List</div>
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                    <button className="btn-green" onClick={()=>dlCSV(students,exam)}>📥 CSV</button>
+                    <button className="btn-edit" onClick={()=>dlExcel(students,exam)}>📊 Excel</button>
+                    <button className="btn-amber" onClick={()=>dlPDF(students,exam)}>📄 PDF</button>
+                    <button className="btn-ghost" onClick={()=>dlDOCX(students,exam)} style={{padding:"8px 14px",fontSize:13}}>📝 Word</button>
+                  </div>
+                </div>
+                {students.filter(s=>s.assignedSeat&&s.assignedSeat!=="—").length===0?(
+                  <div style={{textAlign:"center",padding:"24px 0",color:"#4a5568",fontSize:13}}>
+                    <div style={{fontSize:32,marginBottom:8}}>💺</div>
+                    Click "Auto-Arrange Seats" above to assign seats and enable downloads.
+                  </div>
+                ):(
+                  <div style={{overflowX:"auto"}}>
+                    <table className="ep-table">
+                      <thead><tr><th>#</th><th>Name</th><th>Reg No.</th><th>Hall</th><th>Seat</th></tr></thead>
+                      <tbody>
+                        {[...students].filter(s=>s.assignedSeat&&s.assignedSeat!=="—").sort((a,b)=>String(a.regNo).localeCompare(String(b.regNo),undefined,{numeric:true})).map((s,i)=>(
+                          <tr key={s.id}>
+                            <td style={{color:"#4a5568"}}>{i+1}</td>
+                            <td style={{fontWeight:600}}>{s.name}</td>
+                            <td><span className="badge badge-blue">{s.regNo}</span></td>
+                            <td>{s.assignedHall}</td>
+                            <td><span className="badge badge-green">{s.assignedSeat}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── EXAM CONFIG ── */}
+          {tab==="exam"&&(
+            <div className="fade-in">
+              <h2 style={{fontSize:22,fontWeight:800,marginBottom:6,letterSpacing:-0.5}}>Exam Configuration</h2>
+              <p style={{fontSize:13,color:"#718096",marginBottom:24}}>Set the exact date & time when students can see their seat. Admin has full control over the unlock time.</p>
+
+              {examSaved&&<div className="success-box">✅ Exam saved! Students will see their seats after the unlock time.</div>}
+
+              <div className="ep-card" style={{padding:28}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+                  <div style={{gridColumn:"1/-1"}}>
+                    <label className="ep-label">Exam Name</label>
+                    <input className="ep-input" placeholder="e.g. Semester 6 Final Examination" value={examForm.examName} onChange={e=>setExamForm(p=>({...p,examName:e.target.value}))}/>
+                  </div>
+                  <div>
+                    <label className="ep-label">Exam Date</label>
+                    <input className="ep-input" type="date" value={examForm.date} onChange={e=>setExamForm(p=>({...p,date:e.target.value}))}/>
+                  </div>
+                  <div>
+                    <label className="ep-label">Exam Time</label>
+                    <input className="ep-input" type="time" value={examForm.time} onChange={e=>setExamForm(p=>({...p,time:e.target.value}))}/>
+                  </div>
+                </div>
+
+                <div style={{background:"rgba(252,129,129,0.05)",border:"1px solid rgba(252,129,129,0.2)",borderRadius:12,padding:18,marginBottom:16}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                    <span style={{fontSize:18}}>🔒</span>
+                    <div style={{fontSize:13,fontWeight:700,color:"#fc8181"}}>Seat Unlock Time</div>
+                    <span className="badge badge-amber" style={{fontSize:10}}>Auto — 1 hr before exam</span>
+                  </div>
+                  {examForm.date&&examForm.time?(
+                    <div style={{background:"rgba(246,173,85,0.08)",border:"1px solid rgba(246,173,85,0.2)",borderRadius:10,padding:"12px 16px"}}>
+                      <div style={{fontSize:12,color:"#718096",marginBottom:4}}>Seats will be visible to students from:</div>
+                      <div style={{fontSize:18,fontWeight:800,color:"#f6ad55"}}>
+                        {(()=>{const dt=new Date(`${examForm.date}T${examForm.time}`);dt.setHours(dt.getHours()-1);return dt.toLocaleString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});})()}
+                      </div>
+                      <div style={{fontSize:11,color:"#4a5568",marginTop:4}}>= Exam time ({examForm.time}) − 1 hour</div>
+                    </div>
+                  ):(
+                    <div style={{fontSize:13,color:"#4a5568",fontStyle:"italic"}}>Set exam date & time above to see the auto unlock time.</div>
+                  )}
+                </div>
+
+                <button className="btn-primary" onClick={saveExam} style={{padding:"13px 32px",fontSize:14}}>
+                  <span>💾 Save Exam Configuration</span>
+                </button>
+              </div>
             </div>
           )}
         </main>
       </div>
+
+      {/* Modals */}
       {editS&&(
         <div className="modal-overlay">
           <div className="modal-box">
@@ -596,38 +1033,10 @@ function AdminDashboard({students,setStudents,onLogout}) {
           <div className="modal-box" style={{maxWidth:380,textAlign:"center"}}>
             <div style={{fontSize:48,marginBottom:16}}>⚠️</div>
             <h3 style={{fontSize:18,fontWeight:800,color:"#fc8181",marginBottom:10}}>Delete Student?</h3>
-            <p style={{color:"#718096",fontSize:14,lineHeight:1.6,marginBottom:24}}>This action cannot be undone. All data will be permanently removed.</p>
+            <p style={{color:"#718096",fontSize:14,lineHeight:1.6,marginBottom:24}}>This action cannot be undone.</p>
             <div style={{display:"flex",gap:10}}>
               <button onClick={doDelete} style={{flex:1,padding:"12px",background:"rgba(220,50,50,0.8)",border:"none",borderRadius:10,color:"#fff",fontWeight:700,cursor:"pointer",fontFamily:"inherit",fontSize:14}}>Delete</button>
               <button className="btn-ghost" onClick={()=>setDelId(null)} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {editExams&&(
-        <div className="modal-overlay">
-          <div className="modal-box" style={{maxWidth:640}}>
-            <h3 style={{fontSize:18,fontWeight:800,marginBottom:18,color:"#63b3ed"}}>Exams — {editExams.name}</h3>
-            {editExams.exams.map((e,i)=>(
-              <div key={i} style={{background:"rgba(255,255,255,0.03)",borderRadius:12,padding:16,marginBottom:12,border:"1px solid rgba(255,255,255,0.07)"}}>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                  {[["Subject","subject","text"],["Date","date","date"],["Time","time","text"],["Hall","hall","text"],["Seat","seat","text"]].map(([label,key,type])=>(
-                    <div key={key}>
-                      <label className="ep-label">{label}</label>
-                      <input className="ep-input" type={type} value={e[key]||""} onChange={ev=>{
-                        const arr=[...editExams.exams];arr[i]={...arr[i],[key]:ev.target.value};
-                        setEditExams({...editExams,exams:arr});
-                      }}/>
-                    </div>
-                  ))}
-                </div>
-                <button className="btn-danger" onClick={()=>setEditExams({...editExams,exams:editExams.exams.filter((_,j)=>j!==i)})} style={{marginTop:10,fontSize:11}}>Remove</button>
-              </div>
-            ))}
-            <button className="btn-green" onClick={()=>setEditExams({...editExams,exams:[...editExams.exams,{date:"",subject:"",time:"",hall:"",seat:""}]})} style={{marginBottom:16}}>+ Add Exam</button>
-            <div style={{display:"flex",gap:10}}>
-              <button className="btn-primary" onClick={saveExams} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}><span>Save</span></button>
-              <button className="btn-ghost" onClick={()=>setEditExams(null)} style={{flex:1,padding:"12px",fontSize:14,justifyContent:"center"}}>Cancel</button>
             </div>
           </div>
         </div>
@@ -636,20 +1045,53 @@ function AdminDashboard({students,setStudents,onLogout}) {
   );
 }
 
-function App() {
+// ─── localStorage helpers ─────────────────────────────────────
+const LS_STUDENTS="ep_students";
+const LS_EXAM="ep_exam";
+const LS_HALLS="ep_halls";
+
+const DEFAULT_STUDENTS=[
+  {id:1,name:"Arjun Krishnan",email:"arjun@student.edu",password:"Arjun@123",regNo:"REG2024001",department:"Computer Science",semester:"6th Semester",hallTicket:"HT2024001",assignedHall:"",assignedSeat:"",exams:[]},
+  {id:2,name:"Priya Nair",email:"priya@student.edu",password:"Priya@123",regNo:"REG2024002",department:"Electronics",semester:"4th Semester",hallTicket:"HT2024002",assignedHall:"",assignedSeat:"",exams:[]},
+  {id:3,name:"Rahul Menon",email:"rahul@student.edu",password:"Rahul@123",regNo:"REG2024003",department:"Mechanical",semester:"2nd Semester",hallTicket:"",assignedHall:"",assignedSeat:"",exams:[]},
+];
+const DEFAULT_HALLS=[{id:1,name:"Hall-1",capacity:40,sections:["A","B","C","D"],seatsPerSection:10,rows:10,cols:4},{id:2,name:"Hall-2",capacity:40,sections:["A","B","C","D"],seatsPerSection:10,rows:10,cols:4}];
+
+function lsGet(key,fallback){
+  try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}
+  catch{return fallback;}
+}
+function lsSet(key,val){
+  try{localStorage.setItem(key,JSON.stringify(val));}catch{}
+}
+
+// ─── App Root ────────────────────────────────────────────────
+function App(){
   const [page,setPage]=useState("landing");
   const [user,setUser]=useState(null);
-  const [students,setStudents]=useState(INIT_STUDENTS);
+  const [students,setStudentsRaw]=useState(()=>lsGet(LS_STUDENTS,DEFAULT_STUDENTS));
+  const [exam,setExamRaw]=useState(()=>lsGet(LS_EXAM,null));
+  const [halls,setHallsRaw]=useState(()=>lsGet(LS_HALLS,DEFAULT_HALLS));
+
+  const setStudents=val=>{
+    setStudentsRaw(prev=>{const n=typeof val==="function"?val(prev):val;lsSet(LS_STUDENTS,n);return n;});
+  };
+  const setExam=val=>{setExamRaw(val);lsSet(LS_EXAM,val);};
+  const setHalls=val=>{
+    setHallsRaw(prev=>{const n=typeof val==="function"?val(prev):val;lsSet(LS_HALLS,n);return n;});
+  };
+
   const onSuccess=({role,id})=>{setUser({role,id});setPage(role==="admin"?"admin":"student");};
   const logout=()=>{setUser(null);setPage("landing");};
   const currentStudent=user?.role==="student"?(students.find(s=>s.id===user.id)||null):null;
-  return (
+
+  return(
     <>
       {page==="landing"&&<LandingPage goLogin={()=>setPage("login")} goSignup={()=>setPage("signup")}/>}
       {page==="login"&&<LoginPage students={students} onSuccess={onSuccess} goBack={()=>setPage("landing")} goSignup={()=>setPage("signup")}/>}
       {page==="signup"&&<SignupPage goBack={()=>setPage("login")} onRegister={s=>setStudents(prev=>[...prev,s])}/>}
-      {page==="admin"&&<AdminDashboard students={students} setStudents={setStudents} onLogout={logout}/>}
-      {page==="student"&&currentStudent&&<StudentDashboard student={currentStudent} onLogout={logout}/>}
+      {page==="admin"&&<AdminDashboard students={students} setStudents={setStudents} exam={exam} setExam={setExam} halls={halls} setHalls={setHalls} onLogout={logout}/>}
+      {page==="student"&&currentStudent&&<StudentDashboard student={currentStudent} exam={exam} onLogout={logout}/>}
     </>
   );
 }
